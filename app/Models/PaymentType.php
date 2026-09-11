@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PaymentType extends Model
+{
+    protected $fillable = [
+        'name',
+        'description',
+        'is_registration',
+        'is_active',
+    ];
+
+    public function feeSettings()
+    {
+        return $this->hasMany(FeeSetting::class);
+    }
+}

@@ -1,0 +1,1217 @@
+/* =========================================================
+   MGS ADMINLTE
+   Mirai Gresik System
+   Navbar + Background
+   ========================================================= */
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    background: #f8fafc !important;
+    color: #334155;
+}
+
+
+/* =========================================================
+   CONTENT WRAPPER
+   ========================================================= */
+
+.content-wrapper {
+    background: #f8fafc !important;
+}
+
+
+/* =========================================================
+   MAIN HEADER / NAVBAR
+   ========================================================= */
+
+.main-header {
+    background: #ffffff !important;
+
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .04) !important;
+}
+
+
+/* =========================================================
+   NAVBAR LINK
+   ========================================================= */
+
+.main-header .nav-link {
+    color: #475569 !important;
+
+    transition:
+        color .2s ease,
+        background .2s ease;
+}
+
+
+/* =========================================================
+   NAVBAR LINK HOVER
+   ========================================================= */
+
+.main-header .nav-link:hover {
+    color: #2563eb !important;
+
+    background: #f8fafc !important;
+}
+
+
+/* =========================================================
+   NAVBAR ICON
+   ========================================================= */
+
+.main-header .nav-link i,
+.main-header .nav-link .fas,
+.main-header .nav-link .far,
+.main-header .nav-link .fab {
+    color: #64748b;
+}
+
+
+/* =========================================================
+   NAVBAR ICON HOVER
+   ========================================================= */
+
+.main-header .nav-link:hover i,
+.main-header .nav-link:hover .fas,
+.main-header .nav-link:hover .far,
+.main-header .nav-link:hover .fab {
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   CONTENT HEADER
+   ========================================================= */
+
+.content-header {
+    padding-top: 20px !important;
+    padding-bottom: 12px !important;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+   ========================================================= */
+
+.content-header h1 {
+    color: #0f172a !important;
+
+    font-size: 1.35rem;
+
+    font-weight: 600;
+
+    letter-spacing: -.2px;
+}
+
+
+/* =========================================================
+   BREADCRUMB
+   ========================================================= */
+
+.breadcrumb {
+    background: transparent !important;
+
+    padding: 0 !important;
+
+    margin-bottom: 0 !important;
+}
+
+.breadcrumb-item {
+    color: #64748b;
+}
+
+.breadcrumb-item a {
+    color: #2563eb !important;
+}
+
+.breadcrumb-item.active {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.content {
+    padding-top: 10px;
+}
+
+
+/* =========================================================
+   DROPDOWN NAVBAR
+   ========================================================= */
+
+.navbar .dropdown-menu {
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 10px 25px rgba(15, 23, 42, .08);
+}
+
+.navbar .dropdown-item {
+    color: #334155;
+
+    font-size: 14px;
+
+    border-radius: 6px;
+
+    margin: 2px 5px;
+
+    width: auto;
+}
+
+.navbar .dropdown-item:hover {
+    background: #eff6ff;
+
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   MOBILE NAVBAR
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .main-header {
+        min-height: 50px;
+    }
+
+    .content-header {
+        padding-top: 15px !important;
+    }
+
+    .content-header h1 {
+        font-size: 1.15rem;
+    }
+
+}
+
+
+/* =========================================================
+   MGS CARD
+   ========================================================= */
+
+.card {
+    border: 1px solid #e2e8f0 !important;
+
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 1px 3px rgba(15, 23, 42, .04) !important;
+
+    background: #ffffff !important;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.card-header {
+    background: #ffffff !important;
+
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    padding: 14px 18px !important;
+}
+
+
+/* Judul card */
+
+.card-title {
+    color: #0f172a !important;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+
+.card-body {
+    padding: 18px !important;
+
+    color: #475569;
+}
+
+
+/* =========================================================
+   CARD FOOTER
+   ========================================================= */
+
+.card-footer {
+    background: #f8fafc !important;
+
+    border-top: 1px solid #e2e8f0 !important;
+
+    padding: 12px 18px !important;
+}
+
+
+/* =========================================================
+   CARD HOVER
+   ========================================================= */
+
+.card-hover {
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, .08) !important;
+}
+
+
+
+/* =========================================================
+   MGS TABLE
+   ========================================================= */
+
+.table {
+    color: #334155;
+
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
+
+.table thead th {
+    background: #f8fafc !important;
+
+    color: #475569 !important;
+
+    border-top: 0 !important;
+
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    letter-spacing: .2px;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    padding: 11px 12px;
+}
+
+
+/* =========================================================
+   TABLE BODY
+   ========================================================= */
+
+.table tbody td {
+    border-top: 1px solid #f1f5f9 !important;
+
+    color: #475569;
+
+    padding: 11px 12px;
+
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   TABLE HOVER
+   ========================================================= */
+
+.table-hover tbody tr:hover {
+    background: #f8fafc !important;
+}
+
+
+/* =========================================================
+   TABLE LINK
+   ========================================================= */
+
+.table a {
+    color: #2563eb;
+
+    text-decoration: none;
+}
+
+.table a:hover {
+    color: #1d4ed8;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   TABLE BORDER
+   ========================================================= */
+
+.table-bordered {
+    border: 1px solid #e2e8f0 !important;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #e2e8f0 !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLE
+   ========================================================= */
+
+.table-responsive {
+    border-radius: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* Scrollbar table */
+
+.table-responsive::-webkit-scrollbar {
+    height: 5px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+
+
+/* =========================================================
+   MGS SMALL BOX / STATISTIC CARD
+   ========================================================= */
+
+.small-box {
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 1px 3px rgba(15, 23, 42, .06) !important;
+
+    border: 1px solid rgba(226, 232, 240, .8);
+
+    overflow: hidden;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.small-box:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, .08) !important;
+}
+
+
+/* Isi small box */
+
+.small-box .inner {
+    padding: 18px;
+}
+
+
+.small-box h3 {
+    font-size: 1.7rem;
+
+    font-weight: 700;
+}
+
+
+.small-box p {
+    font-size: 13px;
+
+    margin-bottom: 0;
+}
+
+
+/* Icon */
+
+.small-box .icon {
+    opacity: .15;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+
+.small-box:hover .icon {
+    opacity: .20;
+
+    transform: scale(1.05);
+}
+
+
+/* Footer */
+
+.small-box .small-box-footer {
+    background: rgba(15, 23, 42, .03);
+
+    color: #475569;
+
+    border-top: 1px solid rgba(226, 232, 240, .7);
+}
+
+
+.small-box .small-box-footer:hover {
+    background: rgba(37, 99, 235, .06);
+
+    color: #2563eb;
+}
+
+
+
+/* =========================================================
+   MGS BUTTON
+   ========================================================= */
+
+.btn {
+    border-radius: 7px !important;
+
+    font-size: 13.5px;
+
+    font-weight: 500;
+
+    padding: 7px 13px;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        box-shadow .2s ease,
+        transform .15s ease;
+}
+
+
+/* Jangan terlalu besar ketika ditekan */
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+
+/* =========================================================
+   PRIMARY
+   ========================================================= */
+
+.btn-primary {
+    background: #2563eb !important;
+
+    border-color: #2563eb !important;
+
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8 !important;
+
+    border-color: #1d4ed8 !important;
+
+    box-shadow: 0 3px 8px rgba(37, 99, 235, .20);
+}
+
+
+/* =========================================================
+   SECONDARY
+   ========================================================= */
+
+.btn-secondary {
+    background: #64748b !important;
+
+    border-color: #64748b !important;
+
+    color: #ffffff !important;
+}
+
+.btn-secondary:hover {
+    background: #475569 !important;
+
+    border-color: #475569 !important;
+}
+
+
+/* =========================================================
+   SUCCESS
+   ========================================================= */
+
+.btn-success {
+    background: #059669 !important;
+
+    border-color: #059669 !important;
+
+    color: #ffffff !important;
+}
+
+.btn-success:hover {
+    background: #047857 !important;
+
+    border-color: #047857 !important;
+}
+
+
+/* =========================================================
+   WARNING
+   ========================================================= */
+
+.btn-warning {
+    background: #d97706 !important;
+
+    border-color: #d97706 !important;
+
+    color: #ffffff !important;
+}
+
+.btn-warning:hover {
+    background: #b45309 !important;
+
+    border-color: #b45309 !important;
+}
+
+
+/* =========================================================
+   DANGER
+   ========================================================= */
+
+.btn-danger {
+    background: #dc2626 !important;
+
+    border-color: #dc2626 !important;
+
+    color: #ffffff !important;
+}
+
+.btn-danger:hover {
+    background: #b91c1c !important;
+
+    border-color: #b91c1c !important;
+}
+
+
+/* =========================================================
+   INFO
+   ========================================================= */
+
+.btn-info {
+    background: #0284c7 !important;
+
+    border-color: #0284c7 !important;
+
+    color: #ffffff !important;
+}
+
+.btn-info:hover {
+    background: #0369a1 !important;
+
+    border-color: #0369a1 !important;
+}
+
+
+/* =========================================================
+   LIGHT / OUTLINE
+   ========================================================= */
+
+.btn-light {
+    background: #ffffff !important;
+
+    border-color: #cbd5e1 !important;
+
+    color: #334155 !important;
+}
+
+.btn-light:hover {
+    background: #f8fafc !important;
+
+    border-color: #94a3b8 !important;
+}
+
+
+/* =========================================================
+   OUTLINE PRIMARY
+   ========================================================= */
+
+.btn-outline-primary {
+    color: #2563eb !important;
+
+    border-color: #2563eb !important;
+
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background: #eff6ff !important;
+
+    color: #1d4ed8 !important;
+}
+
+
+/* =========================================================
+   BUTTON GROUP
+   ========================================================= */
+
+.btn-group .btn {
+    border-radius: 0 !important;
+}
+
+.btn-group .btn:first-child {
+    border-radius: 7px 0 0 7px !important;
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 7px 7px 0 !important;
+}
+
+
+
+
+/* =========================================================
+   MGS FORM
+   ========================================================= */
+
+.form-control,
+.custom-select,
+.form-select {
+    border: 1px solid #cbd5e1 !important;
+
+    border-radius: 7px !important;
+
+    background: #ffffff !important;
+
+    color: #334155 !important;
+
+    font-size: 13.5px;
+
+    min-height: 38px;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.form-control:focus,
+.custom-select:focus,
+.form-select:focus {
+    border-color: #60a5fa !important;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, .10) !important;
+
+    outline: none !important;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.form-control::placeholder {
+    color: #94a3b8;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+label {
+    color: #334155;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   INPUT GROUP
+   ========================================================= */
+
+.input-group-text {
+    background: #f8fafc !important;
+
+    border: 1px solid #cbd5e1 !important;
+
+    color: #64748b;
+
+    border-radius: 7px 0 0 7px !important;
+}
+
+
+/* =========================================================
+   DISABLED
+   ========================================================= */
+
+.form-control:disabled,
+.form-control[readonly] {
+    background: #f1f5f9 !important;
+
+    color: #64748b !important;
+
+    cursor: not-allowed;
+}
+
+
+
+/* =========================================================
+   FILE INPUT
+   ========================================================= */
+
+input[type="file"].form-control {
+    padding: 6px 8px;
+
+    height: auto;
+
+    min-height: 38px;
+}
+
+
+
+/* =========================================================
+   CHECKBOX / RADIO
+   ========================================================= */
+
+.custom-control-label {
+    color: #475569;
+
+    font-size: 13.5px;
+
+    cursor: pointer;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #2563eb;
+
+    border-color: #2563eb;
+}
+
+
+
+
+/* =========================================================
+   MGS ALERT
+   ========================================================= */
+
+.alert {
+    border-radius: 8px !important;
+
+    border-width: 1px;
+
+    font-size: 13.5px;
+
+    padding: 11px 14px;
+}
+
+
+.alert-success {
+    background: #ecfdf5 !important;
+
+    border-color: #a7f3d0 !important;
+
+    color: #065f46 !important;
+}
+
+
+.alert-danger {
+    background: #fef2f2 !important;
+
+    border-color: #fecaca !important;
+
+    color: #991b1b !important;
+}
+
+
+.alert-warning {
+    background: #fffbeb !important;
+
+    border-color: #fde68a !important;
+
+    color: #92400e !important;
+}
+
+
+.alert-info {
+    background: #eff6ff !important;
+
+    border-color: #bfdbfe !important;
+
+    color: #1e40af !important;
+}
+
+
+
+
+
+
+/* =========================================================
+   MGS MODAL
+   Tailwind Style
+   ========================================================= */
+
+
+/* =========================================================
+   MODAL BACKDROP
+   ========================================================= */
+
+.modal-backdrop {
+    background-color: #0f172a !important;
+}
+
+.modal-backdrop.show {
+    opacity: .55 !important;
+}
+
+
+/* =========================================================
+   MODAL DIALOG
+   ========================================================= */
+
+.modal-dialog {
+    margin: 1.75rem auto;
+}
+
+
+/* =========================================================
+   MODAL CONTENT
+   ========================================================= */
+
+.modal-content {
+    background: #ffffff !important;
+
+    border: 1px solid #e2e8f0 !important;
+
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 20px 40px rgba(15, 23, 42, .15) !important;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.modal-header {
+    background: #ffffff !important;
+
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    padding: 16px 20px !important;
+
+    align-items: center;
+}
+
+
+/* =========================================================
+   MODAL TITLE
+   ========================================================= */
+
+.modal-title {
+    color: #0f172a !important;
+
+    font-size: 16px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1.4;
+
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   MODAL CLOSE BUTTON
+   ========================================================= */
+
+.modal-header .close {
+    width: 32px;
+    height: 32px;
+
+    padding: 0 !important;
+
+    margin: 0 0 0 auto !important;
+
+    border-radius: 7px;
+
+    color: #64748b !important;
+
+    opacity: 1 !important;
+
+    font-size: 20px;
+
+    font-weight: 400;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+}
+
+.modal-header .close:hover {
+    background: #f1f5f9 !important;
+
+    color: #0f172a !important;
+}
+
+
+/* =========================================================
+   MODAL BODY
+   ========================================================= */
+
+.modal-body {
+    background: #ffffff !important;
+
+    padding: 20px !important;
+
+    color: #475569;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MODAL FOOTER
+   ========================================================= */
+
+.modal-footer {
+    background: #f8fafc !important;
+
+    border-top: 1px solid #e2e8f0 !important;
+
+    padding: 12px 20px !important;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   MODAL FOOTER BUTTON
+   ========================================================= */
+
+.modal-footer .btn {
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   MODAL FORM
+   ========================================================= */
+
+.modal-body .form-group {
+    margin-bottom: 16px;
+}
+
+.modal-body label {
+    color: #334155;
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   MODAL INPUT
+   ========================================================= */
+
+.modal-body .form-control {
+    min-height: 38px;
+
+    border: 1px solid #cbd5e1 !important;
+
+    border-radius: 7px !important;
+
+    color: #334155 !important;
+
+    background: #ffffff !important;
+}
+
+.modal-body .form-control:focus {
+    border-color: #60a5fa !important;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, .10) !important;
+}
+
+
+/* =========================================================
+   MODAL SELECT
+   ========================================================= */
+
+.modal-body .custom-select,
+.modal-body .form-select {
+    border: 1px solid #cbd5e1 !important;
+
+    border-radius: 7px !important;
+
+    min-height: 38px;
+
+    color: #334155 !important;
+
+    background-color: #ffffff !important;
+}
+
+.modal-body .custom-select:focus,
+.modal-body .form-select:focus {
+    border-color: #60a5fa !important;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, .10) !important;
+}
+
+
+/* =========================================================
+   MODAL TEXTAREA
+   ========================================================= */
+
+.modal-body textarea.form-control {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+/* =========================================================
+   MODAL ALERT
+   ========================================================= */
+
+.modal-body .alert {
+    margin-bottom: 16px;
+
+    border-radius: 8px !important;
+}
+
+
+/* =========================================================
+   MODAL SMALL TEXT
+   ========================================================= */
+
+.modal-body small,
+.modal-body .text-muted {
+    color: #64748b !important;
+}
+
+
+/* =========================================================
+   MODAL DIVIDER
+   ========================================================= */
+
+.modal-body hr {
+    border-top: 1px solid #e2e8f0;
+
+    margin: 18px 0;
+}
+
+
+/* =========================================================
+   MODAL LARGE
+   ========================================================= */
+
+.modal-lg .modal-content {
+    border-radius: 14px !important;
+}
+
+
+/* =========================================================
+   MODAL SMALL
+   ========================================================= */
+
+.modal-sm .modal-content {
+    border-radius: 10px !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .modal-dialog {
+        margin: .75rem !important;
+
+        max-width: none !important;
+    }
+
+    .modal-content {
+        border-radius: 10px !important;
+    }
+
+    .modal-header {
+        padding: 14px 16px !important;
+    }
+
+    .modal-body {
+        padding: 16px !important;
+    }
+
+    .modal-footer {
+        padding: 10px 16px !important;
+
+        flex-wrap: wrap;
+    }
+
+    .modal-footer .btn {
+        flex: 1 1 auto;
+    }
+
+}

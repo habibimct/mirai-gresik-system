@@ -1,0 +1,473 @@
+/* =========================================================
+   MGS ELEGANT SIDEBAR
+   Mirai Gresik System
+   ========================================================= */
+
+
+/* =========================================================
+   SIDEBAR UTAMA
+   ========================================================= */
+
+.main-sidebar {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 105% -5%,
+            transparent 0,
+            transparent 127px,
+            rgba(255, 255, 255, 0.10) 128px,
+            transparent 129px
+        ),
+        radial-gradient(
+            circle at -10% 110%,
+            transparent 0,
+            transparent 159px,
+            rgba(255, 255, 255, 0.10) 160px,
+            transparent 161px
+        ),
+        radial-gradient(
+            circle at 90% 50%,
+            rgba(255, 255, 255, 0.05),
+            transparent 64px
+        ),
+        linear-gradient(
+            to bottom right,
+            #1d4ed8,
+            #4338ca,
+            #6d28d9
+        ) !important;
+
+    color: white;
+}
+
+
+
+/* =========================================================
+   BRAND / LOGO
+   ========================================================= */
+
+.brand-link {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+
+    background: rgba(255, 255, 255, 0.04) !important;
+
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+
+    position: relative;
+    z-index: 2;
+
+    transition: background 0.2s ease;
+}
+
+.brand-link:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.brand-text {
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+    color: #ffffff !important;
+}
+
+
+
+/* =========================================================
+   MENU HEADER
+   ========================================================= */
+
+.nav-header {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, .55) !important;
+
+    margin-top: 16px;
+    margin-bottom: 6px;
+
+    padding-left: 16px !important;
+}
+
+
+/* =========================================================
+   SEMUA MENU
+   ========================================================= */
+
+.nav-sidebar .nav-link {
+    border-radius: 7px;
+
+    margin: 3px 8px;
+
+    padding: 9px 12px;
+
+    color: rgba(255, 255, 255, .82) !important;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+/* =========================================================
+   ICON MENU
+   ========================================================= */
+
+.nav-sidebar .nav-icon {
+    font-size: 14px;
+    margin-right: 7px;
+
+    color: rgba(255, 255, 255, 0.70);
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   MENU LINK
+   ========================================================= */
+
+.nav-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.88) !important;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.10) !important;
+
+    color: #ffffff !important;
+}
+
+.nav-sidebar .nav-link:hover .nav-icon {
+    color: #ffffff !important;
+
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   MENU INDUK
+   ========================================================= */
+
+.nav-sidebar > .nav-item > .nav-link {
+    font-weight: 500;
+
+    color: rgba(255, 255, 255, 0.88) !important;
+
+    border-radius: 6px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   MENU AKTIF / MENU OPEN
+   ========================================================= */
+
+.nav-sidebar > .nav-item.menu-open > .nav-link,
+.nav-sidebar > .nav-item > .nav-link.active {
+
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.08)
+    ) !important;
+
+    color: #ffffff !important;
+
+    box-shadow:
+        inset 3px 0 0 rgba(255, 255, 255, 0.90),
+        0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   ICON MENU AKTIF
+   ========================================================= */
+
+.nav-sidebar > .nav-item > .nav-link.active .nav-icon,
+.nav-sidebar > .nav-item.menu-open > .nav-link .nav-icon {
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   ARROW / TOGGLE MENU
+   ========================================================= */
+
+.nav-sidebar > .nav-item > .nav-link .right {
+    color: rgba(255, 255, 255, 0.60);
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nav-sidebar > .nav-item.menu-open > .nav-link .right {
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   SUBMENU
+   ========================================================= */
+
+.nav-treeview {
+    position: relative;
+
+    margin-top: 3px;
+    margin-bottom: 5px;
+
+    padding-left: 4px;
+}
+
+
+/* =========================================================
+   SUBMENU LINK
+   ========================================================= */
+
+.nav-treeview > .nav-item > .nav-link {
+    color: rgba(255, 255, 255, 0.72) !important;
+
+    border-radius: 5px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* =========================================================
+   SUBMENU HOVER
+   ========================================================= */
+
+.nav-treeview > .nav-item > .nav-link:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   SUBMENU AKTIF
+   ========================================================= */
+
+.nav-treeview > .nav-item > .nav-link.active {
+    background: rgba(255, 255, 255, 0.10) !important;
+
+    color: #ffffff !important;
+
+    box-shadow:
+        inset 2px 0 0 rgba(255, 255, 255, 0.70);
+}
+
+
+/* Icon submenu aktif */
+
+.nav-treeview > .nav-item > .nav-link.active .nav-icon {
+    color: #ffffff !important;
+}
+
+/* =========================================================
+   GARIS VERTIKAL SUBMENU
+   ========================================================= */
+
+.nav-treeview::before {
+    content: "";
+
+    position: absolute;
+
+    left: 24px;
+
+    top: 6px;
+    bottom: 6px;
+
+    width: 1px;
+
+    background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================================================
+   LINK SUBMENU
+   ========================================================= */
+
+.nav-treeview .nav-link {
+    margin-left: 18px;
+
+    padding-left: 22px !important;
+
+    font-size: 13.5px;
+
+    color: rgba(255, 255, 255, 0.72) !important;
+
+    border-radius: 6px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER SUBMENU
+   ========================================================= */
+
+.nav-treeview .nav-link:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   ICON / BULLET SUBMENU
+   ========================================================= */
+
+.nav-treeview .nav-icon {
+    font-size: 7px !important;
+
+    margin-right: 12px !important;
+
+    color: rgba(255, 255, 255, 0.45) !important;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   BULLET SUBMENU HOVER
+   ========================================================= */
+
+.nav-treeview .nav-link:hover .nav-icon {
+    color: rgba(255, 255, 255, 0.90) !important;
+
+    transform: scale(1.15);
+}
+
+
+/* =========================================================
+   SUBMENU AKTIF
+   ========================================================= */
+
+.nav-treeview .nav-link.active {
+    background: rgba(255, 255, 255, 0.10) !important;
+
+    color: #ffffff !important;
+
+    box-shadow:
+        inset 2px 0 0 rgba(255, 255, 255, 0.70);
+}
+
+
+/* =========================================================
+   BULLET SUBMENU AKTIF
+   ========================================================= */
+
+.nav-treeview .nav-link.active .nav-icon {
+    color: #ffffff !important;
+
+    transform: scale(1.15);
+}
+
+/* =========================================================
+   HOVER SUBMENU
+   ========================================================= */
+
+.nav-treeview .nav-link:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   SUBMENU AKTIF
+   ========================================================= */
+
+.nav-treeview .nav-link.active {
+    background: rgba(255, 255, 255, 0.10) !important;
+
+    color: #ffffff !important;
+
+    font-weight: 600 !important;
+
+    box-shadow:
+        inset 2px 0 0 rgba(255, 255, 255, 0.70);
+}
+
+
+/* =========================================================
+   BULLET SUBMENU AKTIF
+   ========================================================= */
+
+.nav-treeview .nav-link.active .nav-icon {
+    color: #ffffff !important;
+
+    transform: scale(1.15);
+}
+
+
+/* =========================================================
+   CHEVRON
+   ========================================================= */
+
+.nav-sidebar .right {
+    color: rgba(255, 255, 255, 0.60);
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* Chevron saat menu open */
+
+.nav-sidebar .menu-open > .nav-link .right {
+    color: #ffffff !important;
+
+    transform: rotate(-90deg);
+}
+
+
+/* =========================================================
+   SCROLLBAR SIDEBAR
+   ========================================================= */
+
+.main-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.main-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+
+    border-radius: 10px;
+
+    transition: background 0.2s ease;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.24);
+}

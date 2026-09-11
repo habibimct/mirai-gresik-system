@@ -9,12 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('participants', function (Blueprint $table) {
+            // Hapus foreign key terlebih dahulu
+            $table->dropForeign(['wave_program_id']);
 
-            // Hapus index terlebih dahulu
-            $table->dropIndex('participants_wave_program_id_foreign');
-            $table->dropIndex('classroom_id');
-
-            // Baru hapus kolom
+            // Hapus kolom yang sudah tidak digunakan
             $table->dropColumn([
                 'wave_program_id',
                 'classroom_id',
@@ -25,12 +23,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('participants', function (Blueprint $table) {
-
             $table->unsignedBigInteger('wave_program_id')->nullable();
             $table->unsignedBigInteger('classroom_id')->nullable();
 
-            $table->index('wave_program_id', 'participants_wave_program_id_foreign');
             $table->index('classroom_id');
+
+            $table->foreign('wave_program_id')
+                ->references('id')
+                ->on('wave_programs')
+                ->nullOnDelete();
         });
     }
 };

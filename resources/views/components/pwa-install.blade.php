@@ -60,20 +60,25 @@
 <script>
 (() => {
 
-    const container =
-        document.getElementById('pwa-install-container');
+    let deferredPrompt = null;
 
-    const button =
-        document.getElementById('pwa-install-button');
+    const container = document.getElementById(
+        'pwa-install-container'
+    );
+
+    const button = document.getElementById(
+        'pwa-install-button'
+    );
 
     if (!container || !button) {
+        console.warn('[PWA UI] Element tidak ditemukan.');
         return;
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | Already Installed
+    | Check Standalone
     |--------------------------------------------------------------------------
     */
 
@@ -82,23 +87,28 @@
         window.navigator.standalone === true;
 
     if (isStandalone) {
+        console.log('[PWA UI] Aplikasi sudah berjalan sebagai PWA.');
         return;
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | Install Available Event
+    | beforeinstallprompt
     |--------------------------------------------------------------------------
     */
 
     window.addEventListener(
-        'pwa-install-available',
-        () => {
+        'beforeinstallprompt',
+        (event) => {
 
             console.log(
-                '[PWA UI] Install MGS tersedia.'
+                '[PWA UI] 🔥 beforeinstallprompt diterima langsung oleh component.'
             );
+
+            event.preventDefault();
+
+            deferredPrompt = event;
 
             container.style.display = 'block';
 
@@ -108,19 +118,43 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Check Current Status
+    | Install Button
     |--------------------------------------------------------------------------
     */
 
-    if (window.pwaInstallAvailable === true) {
+    button.addEventListener(
+        'click',
+        async () => {
 
-        console.log(
-            '[PWA UI] Install MGS sudah tersedia.'
-        );
+            console.log(
+                '[PWA UI] Tombol Install MGS diklik.'
+            );
 
-        container.style.display = 'block';
+            if (!deferredPrompt) {
 
-    }
+                console.warn(
+                    '[PWA UI] Install prompt belum tersedia.'
+                );
+
+                return;
+            }
+
+            deferredPrompt.prompt();
+
+            const result =
+                await deferredPrompt.userChoice;
+
+            console.log(
+                '[PWA UI] Install result:',
+                result.outcome
+            );
+
+            deferredPrompt = null;
+
+            container.style.display = 'none';
+
+        }
+    );
 
 
     /*
@@ -130,62 +164,16 @@
     */
 
     window.addEventListener(
-        'pwa-installed',
+        'appinstalled',
         () => {
 
             console.log(
-                '[PWA UI] App berhasil di-install.'
+                '[PWA UI] ✅ MGS berhasil di-install.'
             );
 
-            container.style.display = 'none';
-
-        }
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Install Finished
-    |--------------------------------------------------------------------------
-    */
-
-    window.addEventListener(
-        'pwa-install-finished',
-        () => {
+            deferredPrompt = null;
 
             container.style.display = 'none';
-
-        }
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Button
-    |--------------------------------------------------------------------------
-    */
-
-    button.addEventListener(
-        'click',
-        () => {
-
-            console.log(
-                '[PWA UI] Tombol Install MGS diklik.'
-            );
-
-            if (
-                typeof window.installPwa === 'function'
-            ) {
-
-                window.installPwa();
-
-            } else {
-
-                console.error(
-                    '[PWA UI] window.installPwa tidak tersedia.'
-                );
-
-            }
 
         }
     );

@@ -10,7 +10,7 @@ use App\Http\Controllers\WaveController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ActivityLogController;
 
-Route::redirect('/', '/login');
+Route::redirect('/', 'dashboard');
 
 Route::middleware('auth')->get('/no-role', function () {
     return view('auth.no-role');

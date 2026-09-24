@@ -32,18 +32,5 @@ class DatabaseSeeder extends Seeder
 
         $admin->assignRole('Super Admin');
 
-        // 50 Peserta
-        for ($i = 1; $i <= 50; $i++) {
-
-            $user = User::factory()->create();
-
-            $user->assignRole('Peserta');
-
-            Participant::factory()->create([
-                'user_id' => $user->id,
-            ]);
-
-            $this->command->info("Peserta {$i} berhasil dibuat");
-        }
     }
 }

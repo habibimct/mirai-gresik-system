@@ -9,6 +9,7 @@ use App\Models\ParticipantInvoiceItem;
 use App\Models\ParticipantWaveProgram;
 use App\Models\WaveFeeSetting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Program;
 use App\Models\Wave;
 use App\Models\Classroom;
@@ -667,7 +668,7 @@ Sisa Tagihan: Rp {$remaining}";
 
     public function myInvoices()
     {
-        $participant = auth()->user()->participant;
+        $participant = Auth::user()->participant;
 
         if (!$participant) {
             abort(

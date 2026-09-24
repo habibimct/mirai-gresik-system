@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('layouts.pwa-meta')
 
     <title>Dashboard Peserta - MGS</title>
 
@@ -33,6 +34,7 @@
 
             </div>
 
+            <x-pwa-install />
 
             <div class="flex items-center gap-3">
 

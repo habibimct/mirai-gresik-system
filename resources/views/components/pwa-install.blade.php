@@ -58,13 +58,24 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('pwa-install-container');
-    const button = document.getElementById('pwa-install-button');
+(() => {
+
+    const container =
+        document.getElementById('pwa-install-container');
+
+    const button =
+        document.getElementById('pwa-install-button');
 
     if (!container || !button) {
         return;
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Already Installed
+    |--------------------------------------------------------------------------
+    */
 
     const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -74,22 +85,110 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    window.addEventListener('pwa-install-available', () => {
-        container.style.display = 'block';
-    });
 
-    window.addEventListener('pwa-installed', () => {
-        container.style.display = 'none';
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | Install Available Event
+    |--------------------------------------------------------------------------
+    */
 
-    window.addEventListener('pwa-install-finished', () => {
-        container.style.display = 'none';
-    });
+    window.addEventListener(
+        'pwa-install-available',
+        () => {
 
-    button.addEventListener('click', () => {
-        if (typeof window.installPwa === 'function') {
-            window.installPwa();
+            console.log(
+                '[PWA UI] Install MGS tersedia.'
+            );
+
+            container.style.display = 'block';
+
         }
-    });
-});
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check Current Status
+    |--------------------------------------------------------------------------
+    */
+
+    if (window.pwaInstallAvailable === true) {
+
+        console.log(
+            '[PWA UI] Install MGS sudah tersedia.'
+        );
+
+        container.style.display = 'block';
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | App Installed
+    |--------------------------------------------------------------------------
+    */
+
+    window.addEventListener(
+        'pwa-installed',
+        () => {
+
+            console.log(
+                '[PWA UI] App berhasil di-install.'
+            );
+
+            container.style.display = 'none';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Install Finished
+    |--------------------------------------------------------------------------
+    */
+
+    window.addEventListener(
+        'pwa-install-finished',
+        () => {
+
+            container.style.display = 'none';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Button
+    |--------------------------------------------------------------------------
+    */
+
+    button.addEventListener(
+        'click',
+        () => {
+
+            console.log(
+                '[PWA UI] Tombol Install MGS diklik.'
+            );
+
+            if (
+                typeof window.installPwa === 'function'
+            ) {
+
+                window.installPwa();
+
+            } else {
+
+                console.error(
+                    '[PWA UI] window.installPwa tidak tersedia.'
+                );
+
+            }
+
+        }
+    );
+
+})();
 </script>

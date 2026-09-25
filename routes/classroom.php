@@ -6,6 +6,9 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ScoreSessionController;
 use App\Http\Controllers\ScoreTypeController;
 use App\Http\Controllers\ScoreRecapController;
+use App\Http\Controllers\AttitudeTypeController;
+use App\Http\Controllers\AttitudeSessionController;
+use App\Http\Controllers\AttitudeScoreController;
 
 
 /*
@@ -160,4 +163,43 @@ Route::middleware([
         [ScoreRecapController::class, 'exportParticipantPdf']
     )->name('score-recaps.participant.pdf');
 
+
+
+
+
+
+    Route::post(
+        '/classrooms/{classroom}/attitude-types',
+        [AttitudeTypeController::class, 'store']
+    )->name('classrooms.attitude-types.store');
+
+    Route::put(
+        '/classrooms/{classroom}/attitude-types/{attitudeType}',
+        [AttitudeTypeController::class, 'update']
+    )->name('classrooms.attitude-types.update');
+
+    Route::delete(
+        '/classrooms/{classroom}/attitude-types/{attitudeType}',
+        [AttitudeTypeController::class, 'destroy']
+    )->name('classrooms.attitude-types.destroy');
+
+    Route::post(
+        '/classrooms/{classroom}/attitude-sessions',
+        [AttitudeSessionController::class, 'store']
+    )->name('classrooms.attitude-sessions.store');
+
+    Route::get(
+        '/classrooms/{classroom}/attitude-sessions/{attitudeSession}/scores',
+        [AttitudeSessionController::class, 'scores']
+    )->name('classrooms.attitude-sessions.scores');
+
+    Route::post(
+        '/classrooms/{classroom}/attitude-sessions/{attitudeSession}/scores',
+        [AttitudeScoreController::class, 'store']
+    )->name('classrooms.attitude-sessions.scores.store');
+
+    Route::delete(
+        '/classrooms/{classroom}/attitude-sessions/{attitudeSession}',
+        [AttitudeSessionController::class, 'destroy']
+    )->name('classrooms.attitude-sessions.destroy');
 });

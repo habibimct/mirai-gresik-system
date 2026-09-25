@@ -67,4 +67,9 @@ class Classroom extends Model
     {
         return $this->hasMany(ScoreSession::class);
     }
+
+    public function attitudeSessions()
+    {
+        return $this->hasMany(AttitudeSession::class);
+    }
 }

@@ -7,6 +7,7 @@ use App\Models\WaveProgram;
 use App\Models\ParticipantWaveProgram;
 use App\Models\ParticipantClassroom;
 use App\Models\ScoreType;
+use App\Models\AttitudeType;
 use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
@@ -98,6 +99,8 @@ class ClassroomController extends Controller
             'attendanceSessions.attendances.participantClassroom.participantWaveProgram.participant.user',
             'scoreSessions.sessionTypes.type',
             'schedules.attendanceSessions',
+            'attitudeSessions.sessionTypes.type',
+            'attitudeSessions.scores',
 
         ]);
 
@@ -121,12 +124,23 @@ class ClassroomController extends Controller
             ->orderBy('name')
             ->get();
 
+
+        // AttitudeType hanya milik WaveProgram kelas ini
+        $attitudeTypes = AttitudeType::where(
+            'wave_program_id',
+            $classroom->wave_program_id
+        )
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get();
+
         return view(
             'classrooms.show',
             compact(
                 'classroom',
                 'participants',
-                'scoreTypes'
+                'scoreTypes',
+                'attitudeTypes'
             )
         );
     }

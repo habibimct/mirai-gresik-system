@@ -52,4 +52,9 @@ class WaveProgram extends Model
     {
         return $this->hasMany(Classroom::class);
     }
+
+    public function attitudeTypes()
+    {
+        return $this->hasMany(AttitudeType::class);
+    }
 }

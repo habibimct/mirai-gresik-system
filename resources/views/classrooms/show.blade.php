@@ -315,6 +315,17 @@
 
                 </li>
 
+                {{-- NILAI SIKAP --}}
+                <li class="nav-item">
+                    <a class="nav-link" id="attitudes-tab" data-toggle="tab" href="#attitudes" role="tab"
+                        aria-controls="attitudes" aria-selected="false">
+
+                        <i class="fas fa-user-check mr-1"></i>
+                        Nilai Sikap
+
+                    </a>
+                </li>
+
             </ul>
 
         </div>
@@ -361,6 +372,13 @@
                 <div class="tab-pane fade" id="scores" role="tabpanel" aria-labelledby="scores-tab">
 
                     @include('classrooms.tabs.scores')
+
+                </div>
+
+                {{-- NILAI SIKAP --}}
+                <div class="tab-pane fade" id="attitudes" role="tabpanel" aria-labelledby="attitudes-tab">
+
+                    @include('classrooms.tabs.attitudes')
 
                 </div>
 

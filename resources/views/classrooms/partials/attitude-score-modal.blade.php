@@ -2,17 +2,20 @@
 {{-- MODAL INPUT NILAI SIKAP --}}
 {{-- ========================================================= --}}
 
-@php
-    $sessionScores = $session->scores->keyBy(function ($score) {
-        return $score->participant_classroom_id . '_' . $score->attitude_type_id;
-    });
-
-    $participantNotes = $session->scores->groupBy('participant_classroom_id')->map(function ($scores) {
-        return $scores->first()->notes;
-    });
-@endphp
-
 @foreach ($classroom->attitudeSessions as $session)
+
+    @php
+        $sessionScores = $session->scores->keyBy(function ($score) {
+            return $score->participant_classroom_id . '_' . $score->attitude_type_id;
+        });
+
+        $participantNotes = $session->scores
+            ->groupBy('participant_classroom_id')
+            ->map(function ($scores) {
+                return $scores->first()->notes;
+            });
+    @endphp
+
     <div class="modal fade" id="attitudeScoreModal{{ $session->id }}" tabindex="-1" role="dialog"
         aria-labelledby="attitudeScoreModalLabel{{ $session->id }}" aria-hidden="true">
 

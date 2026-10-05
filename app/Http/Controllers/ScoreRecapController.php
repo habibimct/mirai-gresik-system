@@ -1026,6 +1026,8 @@ class ScoreRecapController extends Controller
         Classroom $classroom,
         ParticipantClassroom $participantClassroom
     ) {
+        ini_set('memory_limit', '256M');
+
         $participantClassroom->load([
             'participantWaveProgram.participant.user',
             'scores.session',

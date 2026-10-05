@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -13,11 +12,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             RolePermissionSeeder::class,
-            ScoreTypeSeeder::class,
         ]);
-
-        // Jalankan seeder role terlebih dahulu
-        $this->call(RolePermissionSeeder::class);
 
         // Super Admin
         $admin = User::updateOrCreate(
@@ -31,6 +26,5 @@ class DatabaseSeeder extends Seeder
         );
 
         $admin->assignRole('Super Admin');
-
     }
 }

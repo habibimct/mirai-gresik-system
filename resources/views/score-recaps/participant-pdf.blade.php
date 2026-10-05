@@ -37,13 +37,13 @@
 
         .document-header {
             width: 100%;
-            margin-bottom: 18px;
+            margin-bottom: 10px;
         }
 
         .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
+            margin-bottom: 5px;
             table-layout: fixed;
         }
 
@@ -73,12 +73,12 @@
         .header-title .document-title {
             font-size: 15px;
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .header-title .subtitle {
-            font-size: 9px;
-            margin-top: 2px;
+            font-size: 8px;
+            margin-top: 1px;
         }
 
         .document-number {
@@ -331,6 +331,228 @@
             border: none !important;
         }
 
+        tr {
+            page-break-inside: avoid;
+        }
+
+
+
+
+
+
+        /* ==========================================
+   DESAIN BARU PDF AKADEMIK
+   ========================================== */
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 9px;
+            color: #263445;
+            line-height: 1.5;
+        }
+
+        /* HEADER */
+        .document-header {
+            margin-bottom: 10px;
+        }
+
+        .header-title .institution {
+            color: #176b55;
+            font-size: 19px;
+            letter-spacing: 1px;
+        }
+
+        .header-title .document-title {
+            color: #1e293b;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+
+        .header-title .subtitle {
+            color: #64748b;
+            font-size: 8px;
+        }
+
+        .document-number {
+            color: #64748b;
+            font-size: 7px;
+        }
+
+        .header-line {
+            border-top: 3px solid #176b55;
+            margin-top: 5px;
+        }
+
+        .header-line-thin {
+            border-top: 1px solid #b7d3c8;
+            margin-top: 2px;
+        }
+
+        /* JUDUL BAGIAN */
+        .section {
+            margin-top: 14px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #176b55;
+            background: #edf6f2;
+            border-left: 4px solid #176b55;
+            border-bottom: none;
+            padding: 6px 8px;
+            margin-bottom: 9px;
+        }
+
+        /* IDENTITAS PESERTA */
+        .identity {
+            margin-bottom: 8px;
+        }
+
+        .identity td {
+            padding: 4px 5px;
+            color: #263445;
+        }
+
+        .identity .label {
+            color: #64748b;
+            font-weight: normal;
+        }
+
+        /* TABEL RINGKASAN */
+        .summary {
+            border-collapse: separate;
+            border-spacing: 5px;
+            margin: 0 -5px;
+        }
+
+        .summary th {
+            background: #176b55;
+            color: #fff;
+            border: 1px solid #176b55;
+            padding: 8px 5px;
+        }
+
+        .summary td {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 9px 5px;
+            color: #263445;
+        }
+
+        .summary .value {
+            font-size: 16px;
+            color: #176b55;
+            font-weight: bold;
+        }
+
+        .status {
+            color: #176b55;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* TABEL KEHADIRAN */
+        table.data {
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        table.data th {
+            background: #176b55;
+            color: #fff;
+            border: 1px solid #176b55;
+            padding: 7px 5px;
+        }
+
+        table.data td {
+            border: 1px solid #d6dee5;
+            padding: 6px 5px;
+        }
+
+        table.data tbody tr:nth-child(even) {
+            background: #f5f8fa;
+        }
+
+        /* TABEL NILAI MINGGUAN */
+        .score-table {
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .score-table th {
+            background: #176b55;
+            color: #fff;
+            border: 1px solid #176b55;
+            padding: 7px 5px;
+            font-size: 8px;
+        }
+
+        .score-table td {
+            border: 1px solid #d6dee5;
+            padding: 6px 5px;
+            color: #263445;
+        }
+
+        .score-table tbody tr:nth-child(even) {
+            background: #f5f8fa;
+        }
+
+        .score-table .average {
+            background: #edf6f2;
+            color: #176b55;
+            font-weight: bold;
+        }
+
+        /* TANDA TANGAN */
+        .signature-section {
+            margin-top: 24px;
+            page-break-inside: avoid;
+        }
+
+        .signature-table td {
+            color: #263445;
+            font-size: 9px;
+        }
+
+        .signature-space {
+            height: 65px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #176b55;
+            color: #263445;
+            padding-top: 5px;
+        }
+
+        /* HALAMAN GRAFIK */
+        .chart-page {
+            page-break-before: always;
+        }
+
+        .chart-section {
+            margin-top: 12px;
+            page-break-inside: avoid;
+        }
+
+        .chart-title {
+            font-size: 9px;
+            font-weight: bold;
+            color: #176b55;
+            background: #edf6f2;
+            border-bottom: 1px solid #b7d3c8;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+        }
+
+        .chart {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        /* MENCEGAH BARIS TERPOTONG */
         tr {
             page-break-inside: avoid;
         }

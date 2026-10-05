@@ -202,4 +202,21 @@ Route::middleware([
         '/classrooms/{classroom}/attitude-sessions/{attitudeSession}',
         [AttitudeSessionController::class, 'destroy']
     )->name('classrooms.attitude-sessions.destroy');
+
+
+    Route::get(
+        '/classrooms/{classroom}/score-recaps/{participantClassroom}/attitude',
+        [ScoreRecapController::class, 'participantAttitude']
+    )->name('score-recaps.participant-attitude');
+
+
+    Route::get(
+        '/classrooms/{classroom}/score-recaps/{participantClassroom}/attitude/print',
+        [ScoreRecapController::class, 'printParticipantAttitude']
+    )->name('score-recaps.print-participant-attitude');
+
+    Route::get(
+        '/classrooms/{classroom}/score-recaps/{participantClassroom}/attitude/download',
+        [ScoreRecapController::class, 'downloadParticipantAttitude']
+    )->name('score-recaps.download-participant-attitude');
 });

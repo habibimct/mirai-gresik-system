@@ -20,6 +20,7 @@
         <a href="{{ route('score-recaps.show', $classroom) }}" class="btn btn-secondary">
 
             <i class="fas fa-arrow-left mr-1"></i>
+            Kembali
         </a>
 
     </div>

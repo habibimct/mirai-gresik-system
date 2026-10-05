@@ -7,6 +7,7 @@ use App\Models\ScoreType;
 use App\Models\ParticipantClassroom;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ScoreRecapController extends Controller
 {
@@ -31,6 +32,10 @@ class ScoreRecapController extends Controller
             'participantClassrooms.scores',
             'scoreSessions.sessionTypes.type',
             'attendanceSessions.attendances',
+
+            // Rekap Nilai Sikap
+            'attitudeSessions.sessionTypes.type',
+            'attitudeSessions.scores',
         ]);
 
         /*
@@ -154,9 +159,70 @@ class ScoreRecapController extends Controller
             ];
         }
 
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rekap Nilai Sikap
+        |--------------------------------------------------------------------------
+        */
+
+        $attitudeTypes = $classroom->attitudeSessions
+            ->flatMap(function ($session) {
+                return $session->sessionTypes->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        $attitudeRecaps = [];
+
+        foreach ($classroom->participantClassrooms as $participant) {
+            $componentScores = [];
+            $grandTotal = 0;
+            $componentCount = 0;
+
+            foreach ($attitudeTypes as $type) {
+                $scores = $classroom->attitudeSessions
+                    ->flatMap(function ($session) use ($participant, $type) {
+                        return $session->scores
+                            ->where('participant_classroom_id', $participant->id)
+                            ->where('attitude_type_id', $type->id);
+                    });
+
+                $average = $scores->isNotEmpty()
+                    ? round($scores->avg('score'), 2)
+                    : null;
+
+                $componentScores[$type->id] = $average;
+
+                if ($average !== null) {
+                    $grandTotal += $average;
+                    $componentCount++;
+                }
+            }
+
+            $finalScore = $componentCount > 0
+                ? round($grandTotal / $componentCount, 2)
+                : null;
+
+            $attitudeRecaps[] = [
+                'participant' => $participant,
+                'scores' => $componentScores,
+                'final_score' => $finalScore,
+            ];
+        }
+
         return view(
             'score-recaps.show',
-            compact('classroom', 'scoreTypes', 'recaps')
+            compact(
+                'classroom',
+                'scoreTypes',
+                'recaps',
+                'attitudeTypes',
+                'attitudeRecaps'
+            )
         );
     }
 
@@ -276,6 +342,482 @@ class ScoreRecapController extends Controller
                 'statusColor',
                 'weeklyAverage'
             )
+        );
+    }
+
+
+    public function participantAttitude(
+        Classroom $classroom,
+        ParticipantClassroom $participantClassroom
+    ) {
+        $participantClassroom->load([
+            'participantWaveProgram.participant.user',
+        ]);
+
+        $classroom->load([
+            'attitudeSessions.sessionTypes.type',
+            'attitudeSessions.scores',
+        ]);
+
+        // Komponen sikap yang digunakan di kelas ini.
+        $attitudeTypes = $classroom->attitudeSessions
+            ->flatMap(function ($session) {
+                return $session->sessionTypes->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        // Menghitung rata-rata setiap komponen sikap.
+        $componentAverages = [];
+
+        foreach ($attitudeTypes as $type) {
+            $scores = $classroom->attitudeSessions
+                ->flatMap(function ($session) use (
+                    $participantClassroom,
+                    $type
+                ) {
+                    return $session->scores
+                        ->where(
+                            'participant_classroom_id',
+                            $participantClassroom->id
+                        )
+                        ->where('attitude_type_id', $type->id);
+                });
+
+            $componentAverages[$type->id] = $scores->isNotEmpty()
+                ? round($scores->avg('score'), 2)
+                : null;
+        }
+
+        // Nilai akhir adalah rata-rata komponen yang sudah dinilai.
+        $validAverages = collect($componentAverages)
+            ->filter(fn($value) => $value !== null);
+
+        $finalScore = $validAverages->isNotEmpty()
+            ? round($validAverages->avg(), 2)
+            : null;
+
+        // Detail nilai setiap sesi penilaian.
+        $attitudeTable = [];
+
+        foreach ($classroom->attitudeSessions as $session) {
+            $row = [
+                'week' => $session->week,
+                'date' => $session->assessment_date,
+                'scores' => [],
+                'average' => null,
+            ];
+
+            foreach ($attitudeTypes as $type) {
+                $score = $session->scores
+                    ->where(
+                        'participant_classroom_id',
+                        $participantClassroom->id
+                    )
+                    ->where('attitude_type_id', $type->id)
+                    ->first();
+
+                $row['scores'][$type->id] = $score?->score;
+            }
+
+            $sessionScores = collect($row['scores'])
+                ->filter(fn($value) => $value !== null);
+
+            $row['average'] = $sessionScores->isNotEmpty()
+                ? round($sessionScores->avg(), 2)
+                : null;
+
+            $attitudeTable[] = $row;
+        }
+
+        // Grafik perkembangan nilai sikap per minggu.
+        $weeklyAverage = collect($attitudeTable)
+            ->map(function ($row) {
+                return [
+                    'week' => $row['week'],
+                    'average' => $row['average'],
+                ];
+            })
+            ->values();
+
+        return view(
+            'score-recaps.participant-attitude',
+            compact(
+                'classroom',
+                'participantClassroom',
+                'attitudeTypes',
+                'componentAverages',
+                'attitudeTable',
+                'finalScore',
+                'weeklyAverage'
+            )
+        );
+    }
+
+
+
+    public function printParticipantAttitude(
+        Classroom $classroom,
+        ParticipantClassroom $participantClassroom
+    ) {
+        $participantClassroom->load([
+            'participantWaveProgram.participant.user',
+        ]);
+
+        $classroom->load([
+            'attitudeSessions.sessionTypes.type',
+            'attitudeSessions.scores',
+        ]);
+
+        $attitudeTypes = $classroom->attitudeSessions
+            ->flatMap(function ($session) {
+                return $session->sessionTypes->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        $componentAverages = [];
+
+        foreach ($attitudeTypes as $type) {
+            $scores = $classroom->attitudeSessions
+                ->flatMap(function ($session) use (
+                    $participantClassroom,
+                    $type
+                ) {
+                    return $session->scores
+                        ->where(
+                            'participant_classroom_id',
+                            $participantClassroom->id
+                        )
+                        ->where('attitude_type_id', $type->id);
+                });
+
+            $componentAverages[$type->id] = $scores->isNotEmpty()
+                ? round($scores->avg('score'), 2)
+                : null;
+        }
+
+        $validAverages = collect($componentAverages)
+            ->filter(fn($value) => $value !== null);
+
+        $finalScore = $validAverages->isNotEmpty()
+            ? round($validAverages->avg(), 2)
+            : null;
+
+        $attitudeTable = [];
+
+        foreach ($classroom->attitudeSessions as $session) {
+            $row = [
+                'week' => $session->week,
+                'date' => $session->assessment_date,
+                'scores' => [],
+                'average' => null,
+            ];
+
+            foreach ($attitudeTypes as $type) {
+                $score = $session->scores
+                    ->where(
+                        'participant_classroom_id',
+                        $participantClassroom->id
+                    )
+                    ->where('attitude_type_id', $type->id)
+                    ->first();
+
+                $row['scores'][$type->id] = $score?->score;
+            }
+
+            $sessionScores = collect($row['scores'])
+                ->filter(fn($value) => $value !== null);
+
+            $row['average'] = $sessionScores->isNotEmpty()
+                ? round($sessionScores->avg(), 2)
+                : null;
+
+            $attitudeTable[] = $row;
+        }
+
+        // Data grafik perkembangan per komponen
+        $attitudeChart = [
+            'labels' => [],
+            'datasets' => [],
+        ];
+
+        foreach ($attitudeTable as $row) {
+            $attitudeChart['labels'][] = 'Minggu ' . $row['week'];
+        }
+
+        $chartColors = [
+            '#28a745',
+            '#007bff',
+            '#ffc107',
+            '#dc3545',
+            '#6f42c1',
+            '#17a2b8',
+            '#fd7e14',
+            '#20c997',
+        ];
+
+        foreach ($attitudeTypes as $index => $type) {
+            $data = [];
+
+            foreach ($attitudeTable as $row) {
+                $data[] = $row['scores'][$type->id];
+            }
+
+            $attitudeChart['datasets'][] = [
+                'label' => $type->name,
+                'data' => $data,
+                'color' => $chartColors[$index % count($chartColors)],
+            ];
+        }
+
+        // Data grafik perkembangan nilai rata-rata
+        $averageChart = [
+            'labels' => [],
+            'data' => [],
+        ];
+
+        foreach ($attitudeTable as $row) {
+            $averageChart['labels'][] = 'Minggu ' . $row['week'];
+            $averageChart['data'][] = $row['average'];
+        }
+
+
+        $componentDatasets = [];
+
+        foreach ($attitudeChart['datasets'] as $item) {
+            $componentDatasets[] = [
+                'label' => $item['label'],
+                'data' => $item['data'],
+                'fill' => false,
+                'spanGaps' => true,
+            ];
+        }
+
+        $componentChartUrl = $this->buildQuickChart(
+            $attitudeChart['labels'],
+            $componentDatasets,
+            900,
+            180
+        );
+
+        $averageChartUrl = $this->buildQuickChart(
+            $averageChart['labels'],
+            [[
+                'label' => 'Rata-rata',
+                'data' => $averageChart['data'],
+                'fill' => false,
+                'spanGaps' => true,
+            ]],
+            900,
+            180
+        );
+
+        return view(
+            'score-recaps.participant-attitude-pdf',
+            compact(
+                'classroom',
+                'participantClassroom',
+                'attitudeTypes',
+                'componentAverages',
+                'attitudeTable',
+                'finalScore',
+                'attitudeChart',
+                'averageChart',
+                'componentChartUrl',
+                'averageChartUrl',
+            )
+        );
+    }
+
+
+    public function downloadParticipantAttitude(
+        Classroom $classroom,
+        ParticipantClassroom $participantClassroom
+    ) {
+        $participantClassroom->load([
+            'participantWaveProgram.participant.user',
+        ]);
+
+        $classroom->load([
+            'waveProgram',
+            'attitudeSessions.sessionTypes.type',
+            'attitudeSessions.scores',
+        ]);
+
+        $attitudeTypes = $classroom->attitudeSessions
+            ->flatMap(fn($session) => $session->sessionTypes->pluck('type'))
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        $componentAverages = [];
+
+        foreach ($attitudeTypes as $type) {
+            $scores = $classroom->attitudeSessions
+                ->flatMap(function ($session) use (
+                    $participantClassroom,
+                    $type
+                ) {
+                    return $session->scores
+                        ->where('participant_classroom_id', $participantClassroom->id)
+                        ->where('attitude_type_id', $type->id);
+                });
+
+            $componentAverages[$type->id] = $scores->isNotEmpty()
+                ? round($scores->avg('score'), 2)
+                : null;
+        }
+
+        $validAverages = collect($componentAverages)
+            ->filter(fn($value) => $value !== null);
+
+        $finalScore = $validAverages->isNotEmpty()
+            ? round($validAverages->avg(), 2)
+            : null;
+
+        $attitudeTable = [];
+
+        foreach ($classroom->attitudeSessions as $session) {
+            $row = [
+                'week' => $session->week,
+                'date' => $session->assessment_date,
+                'scores' => [],
+                'average' => null,
+            ];
+
+            foreach ($attitudeTypes as $type) {
+                $score = $session->scores
+                    ->where('participant_classroom_id', $participantClassroom->id)
+                    ->where('attitude_type_id', $type->id)
+                    ->first();
+
+                $row['scores'][$type->id] = $score?->score;
+            }
+
+            $sessionScores = collect($row['scores'])
+                ->filter(fn($value) => $value !== null);
+
+            $row['average'] = $sessionScores->isNotEmpty()
+                ? round($sessionScores->avg(), 2)
+                : null;
+
+            $attitudeTable[] = $row;
+        }
+
+        $attitudeChart = [
+            'labels' => [],
+            'datasets' => [],
+        ];
+
+        foreach ($attitudeTable as $row) {
+            $attitudeChart['labels'][] = 'Minggu ' . $row['week'];
+        }
+
+        $chartColors = [
+            '#28a745',
+            '#007bff',
+            '#ffc107',
+            '#dc3545',
+            '#6f42c1',
+            '#17a2b8',
+            '#fd7e14',
+            '#20c997',
+        ];
+
+        foreach ($attitudeTypes as $index => $type) {
+            $data = [];
+
+            foreach ($attitudeTable as $row) {
+                $data[] = $row['scores'][$type->id];
+            }
+
+            $attitudeChart['datasets'][] = [
+                'label' => $type->name,
+                'data' => $data,
+                'borderColor' => $chartColors[$index % count($chartColors)],
+                'backgroundColor' => $chartColors[$index % count($chartColors)],
+                'borderWidth' => 2,
+                'fill' => false,
+                'tension' => 0.3,
+                'spanGaps' => true,
+            ];
+        }
+
+        $averageChart = [
+            'labels' => [],
+            'data' => [],
+        ];
+
+        foreach ($attitudeTable as $row) {
+            $averageChart['labels'][] = 'Minggu ' . $row['week'];
+            $averageChart['data'][] = $row['average'];
+        }
+
+        $componentDatasets = [];
+
+        foreach ($attitudeChart['datasets'] as $item) {
+            $componentDatasets[] = [
+                'label' => $item['label'],
+                'data' => $item['data'],
+                'fill' => false,
+                'spanGaps' => true,
+            ];
+        }
+
+        $componentChartUrl = $this->buildQuickChart(
+            $attitudeChart['labels'],
+            $componentDatasets
+        );
+
+        $averageChartUrl = $this->buildQuickChart(
+            $averageChart['labels'],
+            [[
+                'label' => 'Rata-rata Nilai',
+                'data' => $averageChart['data'],
+                'fill' => false,
+                'spanGaps' => true,
+            ]]
+        );
+
+        $logoPath = public_path('images/mgs-logo3.png');
+
+        $logoBase64 = 'data:image/png;base64,' . base64_encode(
+            file_get_contents($logoPath)
+        );
+
+        $pdf = Pdf::loadView(
+            'score-recaps.participant-attitude-download',
+            compact(
+                'classroom',
+                'participantClassroom',
+                'attitudeTypes',
+                'componentAverages',
+                'attitudeTable',
+                'finalScore',
+                'attitudeChart',
+                'averageChart',
+                'componentChartUrl',
+                'averageChartUrl',
+                'logoBase64',
+            )
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'isRemoteEnabled' => true,
+        ]);
+
+        $namaPeserta = $participantClassroom->participantWaveProgram
+            ->participant->user->name ?? 'Peserta';
+
+        return $pdf->download(
+            'nilai-sikap-' . Str::slug($namaPeserta) . '.pdf'
         );
     }
 
@@ -750,13 +1292,21 @@ class ScoreRecapController extends Controller
 
         );
 
-        return $pdf->stream(
-            'hasil-belajar-' . $participantClassroom->id . '.pdf'
+        $namaPeserta = $participantClassroom->participantWaveProgram
+            ->participant->user->name ?? 'Peserta';
+
+        return $pdf->download(
+            'hasil-belajar-' . Str::slug($namaPeserta) . '.pdf'
         );
     }
 
-    private function buildQuickChart(array $labels, array $datasets)
-    {
+
+    private function buildQuickChart(
+        array $labels,
+        array $datasets,
+        int $width = 500,
+        int $height = 300
+    ) {
         $config = [
             'type' => 'line',
             'data' => [
@@ -765,6 +1315,7 @@ class ScoreRecapController extends Controller
             ],
             'options' => [
                 'responsive' => true,
+                'maintainAspectRatio' => false,
                 'legend' => [
                     'display' => true,
                 ],
@@ -779,6 +1330,7 @@ class ScoreRecapController extends Controller
             ],
         ];
 
-        return 'https://quickchart.io/chart?c=' . urlencode(json_encode($config));
+        return 'https://quickchart.io/chart?w=900&h=400&devicePixelRatio=2&c='
+            . urlencode(json_encode($config));
     }
 }

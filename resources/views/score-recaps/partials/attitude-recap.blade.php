@@ -4,6 +4,18 @@
             <i class="fas fa-user-check mr-1"></i>
             Rekap Nilai Sikap Peserta
         </h3>
+
+        <div class="card-tools">
+            <a href="{{ route('score-recaps.print-all-attitude', [
+                'classroom' => $classroom,
+            ]) }}"
+                target="_blank"
+                class="btn btn-secondary btn-sm"
+                title="Cetak Semua Nilai Sikap">
+                <i class="fas fa-print mr-1"></i>
+                Cetak Semua Nilai Sikap
+            </a>
+        </div>
     </div>
 
     <div class="card-body p-0">
@@ -29,7 +41,7 @@
                             Nilai Akhir
                         </th>
 
-                        <th width="100" class="text-center align-middle">
+                        <th width="130" class="text-center align-middle">
                             Aksi
                         </th>
                     </tr>
@@ -78,12 +90,13 @@
                                     class="btn btn-info btn-sm" title="Lihat Detail Nilai Sikap">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('score-recaps.download-participant-attitude', [
+
+                                <a href="{{ route('score-recaps.print-participant-attitude', [
                                     'classroom' => $classroom,
                                     'participantClassroom' => $recap['participant'],
                                 ]) }}"
-                                    class="btn btn-sm btn-danger" title="Unduh PDF Nilai Sikap">
-                                    <i class="fas fa-file-pdf"></i>
+                                    class="btn btn-sm btn-secondary" target="_blank" title="Cetak Nilai Sikap">
+                                    <i class="fas fa-print"></i>
                                 </a>
                             </td>
                         </tr>

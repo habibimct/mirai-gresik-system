@@ -130,7 +130,20 @@
 
         <div class="card-footer d-flex justify-content-end">
 
+            {{-- Cetak browser --}}
             <a href="{{ route('score-recaps.printParticipant', [
+                'classroom' => $classroom,
+                'participantClassroom' => $participantClassroom,
+            ]) }}"
+                target="_blank" class="btn btn-secondary mr-2">
+
+                <i class="fas fa-print mr-1"></i>
+
+                Cetak
+            </a>
+
+            {{-- Cetak PDF --}}
+            <a href="{{ route('score-recaps.participant.pdf', [
                 'classroom' => $classroom,
                 'participantClassroom' => $participantClassroom,
             ]) }}"
@@ -138,8 +151,7 @@
 
                 <i class="fas fa-file-pdf mr-1"></i>
 
-                Cetak Hasil Belajar
-
+                Cetak PDF
             </a>
 
         </div>

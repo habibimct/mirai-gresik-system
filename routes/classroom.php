@@ -148,6 +148,20 @@ Route::middleware([
         [ScoreRecapController::class, 'updateGraduationSetting']
     )->name('score-recaps.graduation-setting');
 
+
+
+    Route::get(
+        '/classrooms/{classroom}/score-recaps/print-all',
+        [ScoreRecapController::class, 'printAllParticipants']
+    )->name('score-recaps.print-all');
+
+    Route::get(
+        '/classrooms/{classroom}/score-recaps/print-all-attitude',
+        [ScoreRecapController::class, 'printAllAttitude']
+    )->name('score-recaps.print-all-attitude');
+
+
+
     Route::get(
         'classrooms/{classroom}/score-recaps/{participantClassroom}',
         [ScoreRecapController::class, 'participant']

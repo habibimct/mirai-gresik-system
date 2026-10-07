@@ -69,7 +69,18 @@
         </div>
 
         <div class="card-footer d-flex justify-content-end">
+            {{-- Cetak browser --}}
             <a href="{{ route('score-recaps.print-participant-attitude', [
+                'classroom' => $classroom,
+                'participantClassroom' => $participantClassroom,
+            ]) }}"
+                class="btn btn-secondary mr-2" target="_blank">
+                <i class="fas fa-print mr-1"></i>
+                Cetak
+            </a>
+
+            {{-- Cetak PDF --}}
+            <a href="{{ route('score-recaps.download-participant-attitude', [
                 'classroom' => $classroom,
                 'participantClassroom' => $participantClassroom,
             ]) }}"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttitudeSession;
 use App\Models\Attendance;
 use App\Models\Classroom;
 use App\Models\ParticipantClassroom;
@@ -13,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AcademicReportExport;
 use App\Exports\AcademicAttendanceExport;
 use App\Exports\AcademicScoreExport;
+use \App\Exports\AcademicAttitudeExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -21,8 +23,29 @@ class AcademicReportController extends Controller
     public function index(Request $request)
     {
         $programs = Program::orderBy('name')->get();
-        $waves = Wave::orderBy('name')->get();
-        $classrooms = Classroom::orderBy('name')->get();
+
+        $waves = Wave::query()
+            ->when($request->filled('program_id'), function ($q) use ($request) {
+                $q->whereHas('wavePrograms', function ($q) use ($request) {
+                    $q->where('program_id', $request->program_id);
+                });
+            })
+            ->orderBy('name')
+            ->get();
+
+        $classrooms = Classroom::query()
+            ->when($request->filled('program_id'), function ($q) use ($request) {
+                $q->whereHas('waveProgram', function ($q) use ($request) {
+                    $q->where('program_id', $request->program_id);
+                });
+            })
+            ->when($request->filled('wave_id'), function ($q) use ($request) {
+                $q->whereHas('waveProgram', function ($q) use ($request) {
+                    $q->where('wave_id', $request->wave_id);
+                });
+            })
+            ->orderBy('name')
+            ->get();
 
         $query = ParticipantClassroom::with([
             'participantWaveProgram.participant.user',
@@ -54,6 +77,21 @@ class AcademicReportController extends Controller
         $participants = $query
             ->orderBy('id')
             ->get();
+
+        if (
+            $request->filled('program_id') ||
+            $request->filled('wave_id') ||
+            $request->filled('classroom_id')
+        ) {
+            if ($participants->isEmpty()) {
+                return redirect()
+                    ->route('reports.academics.index')
+                    ->with(
+                        'error',
+                        'Tidak ada data peserta yang sesuai dengan Program, Gelombang, dan Kelas yang dipilih.'
+                    );
+            }
+        }
 
         // Data sesi kehadiran
         $attendanceSessions = collect();
@@ -93,10 +131,14 @@ class AcademicReportController extends Controller
             2
         );
 
-        $averageAttendance = $totalMeeting > 0
+        $averageAttendance = ($totalParticipant > 0 && $totalMeeting > 0)
             ? round(
                 (
-                    $participants->sum(fn($p) => $p->attendances->where('status', 'Hadir')->count())
+                    $participants->sum(
+                        fn($p) => $p->attendances
+                            ->where('status', 'Hadir')
+                            ->count()
+                    )
                     / ($totalParticipant * $totalMeeting)
                 ) * 100,
                 2
@@ -118,6 +160,75 @@ class AcademicReportController extends Controller
                 ->get();
         }
 
+        // ===============================
+        // NILAI SIKAP
+        // ===============================
+
+        $attitudeSessions = collect();
+
+        if ($request->filled('classroom_id')) {
+            $attitudeSessions = AttitudeSession::with([
+                'sessionTypes.type',
+                'scores',
+            ])
+                ->where('classroom_id', $request->classroom_id)
+                ->where('is_active', true)
+                ->orderBy('week')
+                ->orderBy('assessment_date')
+                ->get();
+        }
+
+        $attitudeTypes = $attitudeSessions
+            ->flatMap(function ($session) {
+                return $session->sessionTypes->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        $attitudeRecaps = [];
+
+        foreach ($participants as $participantClassroom) {
+
+            $componentAverages = [];
+
+            foreach ($attitudeTypes as $type) {
+
+                $scores = $attitudeSessions->flatMap(
+                    function ($session) use ($participantClassroom, $type) {
+
+                        return $session->scores
+                            ->where(
+                                'participant_classroom_id',
+                                $participantClassroom->id
+                            )
+                            ->where(
+                                'attitude_type_id',
+                                $type->id
+                            );
+                    }
+                );
+
+                $componentAverages[$type->id] = $scores->isNotEmpty()
+                    ? round($scores->avg('score'), 2)
+                    : null;
+            }
+
+            $validAverages = collect($componentAverages)
+                ->filter(fn($value) => $value !== null);
+
+            $finalScore = $validAverages->isNotEmpty()
+                ? round($validAverages->avg(), 2)
+                : null;
+
+            $attitudeRecaps[] = [
+                'participant' => $participantClassroom,
+                'componentAverages' => $componentAverages,
+                'finalScore' => $finalScore,
+            ];
+        }
+
         return view(
             'reports.academics.index',
             compact(
@@ -130,7 +241,10 @@ class AcademicReportController extends Controller
                 'averageScore',
                 'averageAttendance',
                 'attendanceSessions',
-                'scoreSessions'
+                'scoreSessions',
+                'attitudeSessions',
+                'attitudeTypes',
+                'attitudeRecaps'
             )
         );
     }
@@ -517,6 +631,144 @@ class AcademicReportController extends Controller
 
         return $pdf->download(
             'Laporan Penilaian.pdf'
+        );
+    }
+
+    public function exportAttitudeExcel(Request $request)
+    {
+        if ($redirect = $this->validateReportFilter($request)) {
+            return $redirect;
+        }
+
+        return Excel::download(
+            new AcademicAttitudeExport($request),
+            'Laporan Nilai Sikap.xlsx'
+        );
+    }
+
+    public function exportAttitudePdf(Request $request)
+    {
+        if ($redirect = $this->validateReportFilter($request)) {
+            return $redirect;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Peserta
+    |--------------------------------------------------------------------------
+    */
+
+        $participantQuery = ParticipantClassroom::with([
+            'participantWaveProgram.participant.user',
+            'participantWaveProgram.waveProgram.program',
+            'classroom.waveProgram.wave',
+        ]);
+
+        // Filter Program
+        if ($request->filled('program_id')) {
+            $participantQuery->whereHas(
+                'participantWaveProgram.waveProgram',
+                function ($q) use ($request) {
+                    $q->where(
+                        'program_id',
+                        $request->program_id
+                    );
+                }
+            );
+        }
+
+        // Filter Gelombang
+        if ($request->filled('wave_id')) {
+            $participantQuery->whereHas(
+                'classroom.waveProgram',
+                function ($q) use ($request) {
+                    $q->where(
+                        'wave_id',
+                        $request->wave_id
+                    );
+                }
+            );
+        }
+
+        // Filter Kelas
+        if ($request->filled('classroom_id')) {
+            $participantQuery->where(
+                'classroom_id',
+                $request->classroom_id
+            );
+        }
+
+        $participants = $participantQuery
+            ->orderBy('id')
+            ->get();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Sesi Nilai Sikap
+    |--------------------------------------------------------------------------
+    */
+
+        $attitudeSessions = collect();
+
+        if ($request->filled('classroom_id')) {
+
+            $attitudeSessions = AttitudeSession::with([
+                'sessionTypes.type',
+                'scores',
+            ])
+                ->where(
+                    'classroom_id',
+                    $request->classroom_id
+                )
+                ->where('is_active', true)
+                ->orderBy('week')
+                ->orderBy('assessment_date')
+                ->orderBy('id')
+                ->get();
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Classroom
+    |--------------------------------------------------------------------------
+    */
+
+        $classroom = Classroom::with([
+            'waveProgram.program',
+            'waveProgram.wave',
+        ])->findOrFail(
+            $request->classroom_id
+        );
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Generate PDF
+    |--------------------------------------------------------------------------
+    */
+
+        $pdf = Pdf::loadView(
+            'reports.academics.attitude-pdf',
+            [
+                'participants' => $participants,
+                'attitudeSessions' => $attitudeSessions,
+                'classroom' => $classroom,
+            ]
+        );
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Landscape
+    |--------------------------------------------------------------------------
+    */
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->download(
+            'Laporan Nilai Sikap.pdf'
         );
     }
 

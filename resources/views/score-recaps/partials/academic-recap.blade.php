@@ -13,15 +13,21 @@
                 Rekap Nilai Peserta
 
             </h3>
-
-
             <div class="card-tools">
+
+                {{-- Cetak Semua Hasil Belajar --}}
+                <a href="{{ route('score-recaps.print-all', [
+                    'classroom' => $classroom,
+                ]) }}"
+                    target="_blank" class="btn btn-secondary btn-sm mr-2" title="Cetak Semua Hasil Belajar">
+                    <i class="fas fa-print mr-1"></i>
+                    Cetak Semua Hasil Belajar
+                </a>
 
                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#graduationSettingModal"
                     title="Pengaturan Kelulusan">
 
                     <i class="fas fa-cogs mr-1"></i>
-
                     Pengaturan Kelulusan
 
                 </button>
@@ -202,8 +208,6 @@
 
                                 </td>
 
-
-
                                 {{-- Status --}}
                                 <td class="text-center align-middle">
 
@@ -223,11 +227,8 @@
 
                                 </td>
 
-
-
                                 {{-- Aksi --}}
                                 <td class="text-center align-middle">
-
 
                                     {{-- Detail --}}
                                     <a href="{{ route('score-recaps.participant', [
@@ -240,15 +241,14 @@
 
                                     </a>
 
-
-                                    {{-- PDF --}}
-                                    <a href="{{ route('score-recaps.participant.pdf', [
+                                    {{-- Cetak --}}
+                                    <a href="{{ route('score-recaps.printParticipant', [
                                         'classroom' => $classroom,
                                         'participantClassroom' => $recap['participant'],
                                     ]) }}"
-                                        target="_blank" class="btn btn-danger btn-sm" title="Cetak PDF">
+                                        target="_blank" class="btn btn-secondary btn-sm" title="Cetak">
 
-                                        <i class="fas fa-file-pdf"></i>
+                                        <i class="fas fa-print"></i>
 
                                     </a>
 

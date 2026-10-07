@@ -128,13 +128,13 @@
 
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search mr-1"></i>
-                        Tampilkan
+                        
                     </button>
 
 
                     <a href="{{ url()->current() }}" class="btn btn-secondary">
                         <i class="fas fa-sync-alt mr-1"></i>
-                        Reset
+                        
                     </a>
 
                 </div>

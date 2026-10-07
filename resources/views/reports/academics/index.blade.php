@@ -23,22 +23,22 @@
 
     <div class="row">
 
-        <div class="col-md-2">
+        <div class="col-md-3">
             <x-adminlte-small-box title="{{ $totalParticipant }}" text="Total Peserta" theme="primary"
                 icon="fas fa-users" />
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-3">
             <x-adminlte-small-box title="{{ $totalMeeting }}" text="Total Pertemuan" theme="success"
                 icon="fas fa-calendar-check" />
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-3">
             <x-adminlte-small-box title="{{ $averageAttendance }}%" text="Rata-rata Kehadiran" theme="info"
                 icon="fas fa-user-check" />
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-3">
             <x-adminlte-small-box title="{{ number_format($averageScore, 2) }}" text="Rata-rata Nilai" theme="warning"
                 icon="fas fa-chart-line" />
         </div>

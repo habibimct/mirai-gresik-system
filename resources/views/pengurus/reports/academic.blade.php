@@ -20,8 +20,7 @@
 
             <div class="mt-4 md:mt-0">
 
-                <a href="{{ route('pengurus.reports.academic.print', request()->query()) }}"
-                    target="_blank"
+                <a href="{{ route('pengurus.reports.academic.print', request()->query()) }}" target="_blank"
                     class="inline-flex items-center px-3 py-2
                        border border-gray-300 rounded-lg
                        text-sm text-gray-700
@@ -276,6 +275,17 @@
                                 Nilai
                             </th>
 
+                            {{-- NILAI SIKAP --}}
+                            @foreach ($attitudeTypes as $type)
+                                <th class="px-4 py-3 text-center">
+                                    {{ $type->name }}
+                                </th>
+                            @endforeach
+
+                            <th class="px-4 py-3 text-center">
+                                Rata-rata Nilai Sikap
+                            </th>
+
                             <th class="px-4 py-3 text-center">
                                 Keterangan
                             </th>
@@ -328,6 +338,22 @@
 
                                 </td>
 
+                                {{-- NILAI SIKAP --}}
+                                @foreach ($attitudeTypes as $type)
+                                    <td class="px-4 py-3 text-center font-medium">
+
+                                        {{ $data['attitude_scores'][$type->id] !== null ? $data['attitude_scores'][$type->id] : '-' }}
+
+                                    </td>
+                                @endforeach
+
+                                {{-- RATA-RATA NILAI SIKAP --}}
+                                <td class="px-4 py-3 text-center font-medium">
+
+                                    {{ $data['attitude_average'] !== null ? $data['attitude_average'] : '-' }}
+
+                                </td>
+
                                 <td class="px-4 py-3 text-center">
 
                                     {{ $data['description'] }}
@@ -340,7 +366,8 @@
 
                             <tr>
 
-                                <td colspan="10" class="px-4 py-8 text-center text-gray-500">
+                                <td colspan="{{ 11 + $attitudeTypes->count() }}"
+                                    class="px-4 py-8 text-center text-gray-500">
 
                                     Belum ada data akademik.
 

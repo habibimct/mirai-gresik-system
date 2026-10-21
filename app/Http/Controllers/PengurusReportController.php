@@ -11,6 +11,7 @@ use App\Models\Attendance;
 use App\Models\Wave;
 use App\Models\Classroom;
 use App\Models\ParticipantInvoice;
+use App\Models\AttitudeSession;
 
 class PengurusReportController extends Controller
 {
@@ -467,13 +468,47 @@ class PengurusReportController extends Controller
 
 
         /*
+|--------------------------------------------------------------------------
+| Data Nilai Sikap
+|--------------------------------------------------------------------------
+*/
+
+        $attitudeSessions = collect();
+
+        if ($classroomId) {
+
+            $attitudeSessions = AttitudeSession::with([
+                'sessionTypes.type',
+                'scores',
+            ])
+                ->where('classroom_id', $classroomId)
+                ->where('is_active', true)
+                ->orderBy('week')
+                ->orderBy('assessment_date')
+                ->orderBy('id')
+                ->get();
+        }
+
+        $attitudeTypes = $attitudeSessions
+            ->flatMap(function ($session) {
+
+                return $session->sessionTypes
+                    ->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+
+        /*
         |--------------------------------------------------------------------------
         | Data Akademik
         |--------------------------------------------------------------------------
         */
 
         $academicData = $participantClassrooms->map(
-            function ($participantClassroom) {
+            function ($participantClassroom) use ($attitudeSessions, $attitudeTypes) {
 
                 $participant =
                     $participantClassroom
@@ -545,6 +580,45 @@ class PengurusReportController extends Controller
                     ? round($scores->avg('score'), 2)
                     : null;
 
+
+                /*
+|--------------------------------------------------------------------------
+| Nilai Sikap
+|--------------------------------------------------------------------------
+*/
+
+                $attitudeScores = [];
+
+                foreach ($attitudeTypes as $type) {
+
+                    $scores = $attitudeSessions->flatMap(
+                        function ($session) use ($participantClassroom, $type) {
+
+                            return $session->scores
+                                ->where(
+                                    'participant_classroom_id',
+                                    $participantClassroom->id
+                                )
+                                ->where(
+                                    'attitude_type_id',
+                                    $type->id
+                                );
+                        }
+                    );
+
+                    $attitudeScores[$type->id] = $scores->isNotEmpty()
+                        ? round($scores->avg('score'), 2)
+                        : null;
+                }
+
+                $validAttitudeScores = collect($attitudeScores)
+                    ->filter(
+                        fn($value) => $value !== null
+                    );
+
+                $attitudeAverage = $validAttitudeScores->isNotEmpty()
+                    ? round($validAttitudeScores->avg(), 2)
+                    : null;
 
                 /*
         |--------------------------------------------------------------------------
@@ -619,6 +693,12 @@ class PengurusReportController extends Controller
                     'average_score'
                     => $averageScore,
 
+                    'attitude_scores'
+                    => $attitudeScores,
+
+                    'attitude_average'
+                    => $attitudeAverage,
+
                     'description'
                     => $description,
                 ];
@@ -689,6 +769,7 @@ class PengurusReportController extends Controller
             'pengurus.reports.academic',
             compact(
                 'academicData',
+                'attitudeTypes',
                 'totalParticipants',
                 'participantsWithScore',
                 'participantsWithoutScore',
@@ -776,13 +857,51 @@ class PengurusReportController extends Controller
 
 
         /*
+|--------------------------------------------------------------------------
+| Data Nilai Sikap
+|--------------------------------------------------------------------------
+*/
+
+        $attitudeSessions = collect();
+
+        if ($classroomId) {
+
+            $attitudeSessions = AttitudeSession::with([
+                'sessionTypes.type',
+                'scores',
+            ])
+                ->where('classroom_id', $classroomId)
+                ->where('is_active', true)
+                ->orderBy('week')
+                ->orderBy('assessment_date')
+                ->orderBy('id')
+                ->get();
+        }
+
+        $attitudeTypes = $attitudeSessions
+            ->flatMap(function ($session) {
+
+                return $session->sessionTypes
+                    ->pluck('type');
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+
+
+        /*
         |--------------------------------------------------------------------------
         | Data Akademik
         |--------------------------------------------------------------------------
         */
 
         $academicData = $participantClassrooms->map(
-            function ($participantClassroom) {
+            function ($participantClassroom) use (
+                $attitudeSessions,
+                $attitudeTypes
+            ) {
 
                 $participant =
                     $participantClassroom
@@ -857,6 +976,50 @@ class PengurusReportController extends Controller
 
 
                 /*
+|--------------------------------------------------------------------------
+| Nilai Sikap
+|--------------------------------------------------------------------------
+*/
+
+                $attitudeScores = [];
+
+                foreach ($attitudeTypes as $type) {
+
+                    $scores = $attitudeSessions->flatMap(
+                        function ($session) use (
+                            $participantClassroom,
+                            $type
+                        ) {
+
+                            return $session->scores
+                                ->where(
+                                    'participant_classroom_id',
+                                    $participantClassroom->id
+                                )
+                                ->where(
+                                    'attitude_type_id',
+                                    $type->id
+                                );
+                        }
+                    );
+
+                    $attitudeScores[$type->id] = $scores->isNotEmpty()
+                        ? round($scores->avg('score'), 2)
+                        : null;
+                }
+
+                $validAttitudeScores = collect($attitudeScores)
+                    ->filter(
+                        fn($value) => $value !== null
+                    );
+
+                $attitudeAverage = $validAttitudeScores->isNotEmpty()
+                    ? round($validAttitudeScores->avg(), 2)
+                    : null;
+
+
+
+                /*
         |--------------------------------------------------------------------------
         | Keterangan
         |--------------------------------------------------------------------------
@@ -928,6 +1091,12 @@ class PengurusReportController extends Controller
                     'average_score'
                     => $averageScore,
 
+                    'attitude_scores'
+                    => $attitudeScores,
+
+                    'attitude_average'
+                    => $attitudeAverage,
+
                     'description'
                     => $description,
 
@@ -993,6 +1162,7 @@ class PengurusReportController extends Controller
             'pengurus.reports.academic-print',
             compact(
                 'academicData',
+                'attitudeTypes',
                 'totalParticipants',
                 'participantsWithScore',
                 'participantsWithoutScore',

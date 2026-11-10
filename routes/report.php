@@ -80,15 +80,15 @@ Route::middleware([
             [AcademicReportController::class, 'exportScorePdf']
         )->name('academics.score.export-pdf');
 
-Route::get(
-    '/reports/academics/attitude/export-excel',
-    [AcademicReportController::class, 'exportAttitudeExcel']
-)->name('academics.attitude.export-excel');
+        Route::get(
+            '/reports/academics/attitude/export-excel',
+            [AcademicReportController::class, 'exportAttitudeExcel']
+        )->name('academics.attitude.export-excel');
 
-Route::get(
-    '/reports/academics/attitude/export-pdf',
-    [AcademicReportController::class, 'exportAttitudePdf']
-)->name('academics.attitude.export-pdf');
+        Route::get(
+            '/reports/academics/attitude/export-pdf',
+            [AcademicReportController::class, 'exportAttitudePdf']
+        )->name('academics.attitude.export-pdf');
 
         Route::get(
             '/academic/export-pdf',

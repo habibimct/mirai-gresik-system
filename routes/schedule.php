@@ -5,7 +5,7 @@ use App\Http\Controllers\ScheduleController;
 
 Route::middleware([
     'auth',
-    'role:Super Admin|Admin|Staff Administrasi',
+    'role:Super Admin|Admin|Staff Administrasi|Instruktur',
 ])->group(function () {
 
     Route::get(

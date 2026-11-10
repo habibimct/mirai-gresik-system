@@ -215,15 +215,13 @@
 
 
             <div class="card-tools">
-
-                <a href="{{ route('waves.programs.create', $wave) }}" class="btn btn-primary btn-sm">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                    data-target="#createWaveProgramModal">
 
                     <i class="fas fa-plus mr-1"></i>
-
                     Tambah Program
 
-                </a>
-
+                </button>
             </div>
 
         </div>
@@ -361,33 +359,23 @@
 
 
                                 {{-- AKSI --}}
-
                                 <td class="text-center">
 
                                     <div class="btn-group">
 
-
                                         {{-- DETAIL --}}
-
-                                        <a href="{{ route('waves.programs.show', [$wave, $item]) }}"
-                                            class="btn btn-info btn-sm" title="Detail">
+                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                            data-target="#showWaveProgramModal-{{ $item->id }}" title="Detail">
 
                                             <i class="fas fa-eye"></i>
-
-                                        </a>
-
-
+                                        </button>
 
                                         {{-- EDIT --}}
-
-                                        <a href="{{ route('waves.programs.edit', [$wave, $item]) }}"
-                                            class="btn btn-warning btn-sm" title="Edit">
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                            data-target="#editWaveProgramModal-{{ $item->id }}" title="Edit">
 
                                             <i class="fas fa-edit"></i>
-
-                                        </a>
-
-
+                                        </button>
 
                                         {{-- HAPUS --}}
                                         @if ($item->classrooms_count == 0)
@@ -401,7 +389,6 @@
                                                     onclick="return confirm('Yakin ingin menghapus program ini dari gelombang?')">
 
                                                     <i class="fas fa-trash"></i>
-
                                                 </button>
 
                                             </form>
@@ -410,9 +397,9 @@
                                                 title="Program sudah memiliki kelas">
 
                                                 <i class="fas fa-lock"></i>
-
                                             </button>
                                         @endif
+
                                     </div>
 
                                 </td>
@@ -445,15 +432,13 @@
 
                                     </p>
 
-
-                                    <a href="{{ route('waves.programs.create', $wave) }}" class="btn btn-primary">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#createWaveProgramModal">
 
                                         <i class="fas fa-plus mr-1"></i>
-
                                         Tambah Program
 
-                                    </a>
-
+                                    </button>
 
                                 </td>
 
@@ -488,6 +473,95 @@
 
 
     </div>
+
+
+    {{-- =========================================================
+        MODAL PROGRAM GELOMBANG
+    ========================================================== --}}
+
+    {{-- CREATE --}}
+    @include('wave-programs.partials.create-modal', [
+        'wave' => $wave,
+        'programs' => $programs,
+    ])
+
+    {{-- EDIT DAN SHOW --}}
+    @foreach ($wavePrograms as $item)
+        @include('wave-programs.partials.edit-modal', [
+            'wave' => $wave,
+            'item' => $item,
+            'programs' => $programs,
+        ])
+
+        @include('wave-programs.partials.show-modal', [
+            'wave' => $wave,
+            'item' => $item,
+        ])
+    @endforeach
+
+    @section('js')
+
+        <script>
+            $(document).ready(function() {
+
+                // Membuka kembali modal sesuai form yang gagal divalidasi
+                @if ($errors->any())
+
+                    const formContext = @json(old('form_context'));
+                    const itemId = @json(old('wave_program_id'));
+
+                    if (formContext === 'edit' && itemId) {
+
+                        $('#editWaveProgramModal-' + itemId).modal('show');
+
+                    } else if (formContext === 'create') {
+
+                        $('#createWaveProgramModal').modal('show');
+
+                    }
+                @endif
+
+            });
+
+
+            // Mengelola fokus ketika modal dibuka
+            $(document).on('show.bs.modal', '.modal', function(event) {
+
+                $(this).data(
+                    'modal-trigger',
+                    event.relatedTarget || document.activeElement
+                );
+
+            });
+
+
+            // Lepaskan fokus sebelum modal disembunyikan
+            $(document).on('hide.bs.modal', '.modal', function() {
+
+                const activeElement = document.activeElement;
+
+                if (activeElement && this.contains(activeElement)) {
+                    activeElement.blur();
+                }
+
+            });
+
+
+            // Kembalikan fokus setelah modal ditutup
+            $(document).on('hidden.bs.modal', '.modal', function() {
+
+                const trigger = $(this).data('modal-trigger');
+
+                if (trigger && document.contains(trigger)) {
+                    trigger.focus();
+                }
+
+                $(this).removeData('modal-trigger');
+
+            });
+        </script>
+
+    @stop
 
 
 @stop

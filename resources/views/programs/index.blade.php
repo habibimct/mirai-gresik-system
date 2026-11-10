@@ -18,10 +18,12 @@
         </div>
 
         <div>
-            <a href="{{ route('programs.create') }}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createProgramModal">
+
                 <i class="fas fa-plus mr-1"></i>
                 Tambah Program
-            </a>
+
+            </button>
         </div>
 
     </div>
@@ -210,27 +212,21 @@
                                 <div class="btn-group">
 
                                     {{-- DETAIL --}}
-
-                                    <a href="{{ route('programs.show', $program) }}" class="btn btn-info btn-sm"
-                                        title="Detail">
+                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#showProgramModal-{{ $program->id }}" title="Detail">
 
                                         <i class="fas fa-eye"></i>
-
-                                    </a>
-
+                                    </button>
 
                                     {{-- EDIT --}}
-
-                                    <a href="{{ route('programs.edit', $program) }}" class="btn btn-warning btn-sm"
-                                        title="Edit">
+                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                        data-target="#editProgramModal-{{ $program->id }}" title="Edit">
 
                                         <i class="fas fa-edit"></i>
-
-                                    </a>
+                                    </button>
 
 
                                     {{-- HAPUS --}}
-
                                     @if ($program->classrooms_count == 0)
                                         <form action="{{ route('programs.destroy', $program) }}" method="POST"
                                             class="d-inline">
@@ -291,5 +287,82 @@
 
     </x-adminlte-card>
 
+    {{-- =========================================================
+        MODAL PROGRAM
+    ========================================================== --}}
+
+    {{-- CREATE --}}
+    @include('programs.partials.create-modal')
+
+    {{-- EDIT & SHOW --}}
+    @foreach ($programs as $program)
+        @include('programs.partials.edit-modal', [
+            'program' => $program,
+        ])
+
+        @include('programs.partials.show-modal', [
+            'program' => $program,
+        ])
+    @endforeach
+
+
+    @section('js')
+
+        <script>
+            $(document).ready(function() {
+
+                // Buka kembali modal jika validasi gagal
+                @if ($errors->any())
+
+                    const formContext = @json(old('form_context'));
+                    const programId = @json(old('program_id'));
+
+                    if (formContext === 'edit' && programId) {
+
+                        $('#editProgramModal-' + programId).modal('show');
+
+                    } else if (formContext === 'create') {
+
+                        $('#createProgramModal').modal('show');
+
+                    }
+                @endif
+
+            });
+
+            // Mengelola fokus modal agar tidak muncul warning aria-hidden
+            $(document).on('show.bs.modal', '.modal', function(event) {
+
+                $(this).data(
+                    'modal-trigger',
+                    event.relatedTarget || document.activeElement
+                );
+
+            });
+
+            $(document).on('hide.bs.modal', '.modal', function() {
+
+                const activeElement = document.activeElement;
+
+                if (activeElement && this.contains(activeElement)) {
+                    activeElement.blur();
+                }
+
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function() {
+
+                const trigger = $(this).data('modal-trigger');
+
+                if (trigger && document.contains(trigger)) {
+                    trigger.focus();
+                }
+
+                $(this).removeData('modal-trigger');
+
+            });
+        </script>
+
+    @stop
 
 @stop

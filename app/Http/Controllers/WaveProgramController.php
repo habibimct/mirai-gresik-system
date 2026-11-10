@@ -19,9 +19,13 @@ class WaveProgramController extends Controller
             ->where('wave_id', $wave->id)
             ->paginate(10);
 
+        $programs = Program::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         return view(
             'wave-programs.index',
-            compact('wave', 'wavePrograms')
+            compact('wave', 'wavePrograms', 'programs')
         );
     }
 

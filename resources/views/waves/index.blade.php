@@ -22,6 +22,53 @@
 @stop
 
 
+@section('css')
+    <style>
+        /* Modal scroll untuk layar mobile */
+        @media (max-width: 767.98px) {
+
+            .modal-dialog.modal-dialog-scrollable {
+                display: flex;
+                height: calc(100% - 1rem);
+                max-height: calc(100% - 1rem);
+                margin: 0.5rem;
+            }
+
+            .modal-dialog-scrollable .modal-content {
+                display: flex;
+                flex-direction: column;
+                max-height: 100%;
+                overflow: hidden;
+            }
+
+            .modal-dialog-scrollable .modal-header,
+            .modal-dialog-scrollable .modal-footer {
+                flex-shrink: 0;
+            }
+
+            .modal-dialog-scrollable .modal-body {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow-y: auto !important;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-y: contain;
+            }
+
+            .btn-mobile-full {
+                width: 100%;
+            }
+
+            @media (min-width: 768px) {
+                .btn-mobile-full {
+                    width: auto;
+                }
+            }
+        }
+    </style>
+@stop
+
+
 @section('content')
 
     {{-- =========================================================
@@ -32,41 +79,28 @@
 
         {{-- HEADER CARD --}}
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3">
 
             <div>
-
                 <h5 class="mb-1">
-
-                    <strong>
-                        Data Gelombang
-                    </strong>
-
+                    <strong>Data Gelombang</strong>
                 </h5>
 
                 <small class="text-muted">
-
                     Menampilkan
-                    <strong>
-                        {{ $waves->total() }}
-                    </strong>
+                    <strong>{{ $waves->total() }}</strong>
                     data gelombang
-
                 </small>
-
             </div>
 
-
-            <div>
-
-                <a href="{{ route('waves.create') }}" class="btn btn-primary">
+            <div class="mt-2 mt-md-0">
+                <button type="button" class="btn btn-primary btn-mobile-full" data-toggle="modal"
+                    data-target="#createWaveModal">
 
                     <i class="fas fa-plus mr-1"></i>
-
                     Tambah Gelombang
 
-                </a>
-
+                </button>
             </div>
 
         </div>
@@ -192,38 +226,30 @@
                                 <div class="btn-group">
 
                                     {{-- DETAIL --}}
+                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#showWaveModal-{{ $wave->id }}" title="Detail">
 
-                                    <a href="{{ route('waves.show', $wave) }}" class="btn btn-info btn-sm" title="Detail">
+                                        <i class="fas fa-eye"></i>
 
-                                        <i class="fas fa-eye mr-1"></i>
-
-                                        
-
-                                    </a>
+                                    </button>
 
 
                                     {{-- PROGRAM --}}
-
                                     <a href="{{ route('waves.programs.index', $wave) }}" class="btn btn-primary btn-sm"
                                         title="Program">
 
-                                        <i class="fas fa-book mr-1"></i>
-
-                                        
+                                        <i class="fas fa-book"></i>
 
                                     </a>
 
 
                                     {{-- EDIT --}}
+                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                        data-target="#editWaveModal-{{ $wave->id }}" title="Edit">
 
-                                    <a href="{{ route('waves.edit', $wave) }}" class="btn btn-warning btn-sm"
-                                        title="Edit">
+                                        <i class="fas fa-edit"></i>
 
-                                        <i class="fas fa-edit mr-1"></i>
-
-                                        
-
-                                    </a>
+                                    </button>
 
 
                                     {{-- HAPUS --}}
@@ -323,5 +349,87 @@
         @endif
 
     </x-adminlte-card>
+
+    {{-- =========================================================
+        MODAL GELOMBANG
+    ========================================================== --}}
+
+    {{-- CREATE --}}
+    @include('waves.partials.create-modal')
+
+
+    {{-- EDIT DAN SHOW --}}
+    @foreach ($waves as $wave)
+        @include('waves.partials.edit-modal', [
+            'wave' => $wave,
+        ])
+
+        @include('waves.partials.show-modal', [
+            'wave' => $wave,
+        ])
+    @endforeach
+
+
+    @section('js')
+
+        <script>
+            $(document).ready(function() {
+
+                // Buka kembali modal jika validasi gagal
+                @if ($errors->any())
+
+                    const formContext = @json(old('form_context'));
+                    const waveId = @json(old('wave_id'));
+
+                    if (formContext === 'edit' && waveId) {
+
+                        $('#editWaveModal-' + waveId).modal('show');
+
+                    } else if (formContext === 'create') {
+
+                        $('#createWaveModal').modal('show');
+
+                    }
+                @endif
+
+            });
+
+
+            // Mengelola fokus modal untuk menghindari warning aria-hidden
+            $(document).on('show.bs.modal', '.modal', function(event) {
+
+                $(this).data(
+                    'modal-trigger',
+                    event.relatedTarget || document.activeElement
+                );
+
+            });
+
+
+            $(document).on('hide.bs.modal', '.modal', function() {
+
+                const activeElement = document.activeElement;
+
+                if (activeElement && this.contains(activeElement)) {
+                    activeElement.blur();
+                }
+
+            });
+
+
+            $(document).on('hidden.bs.modal', '.modal', function() {
+
+                const trigger = $(this).data('modal-trigger');
+
+                if (trigger && document.contains(trigger)) {
+                    trigger.focus();
+                }
+
+                $(this).removeData('modal-trigger');
+
+            });
+        </script>
+
+    @stop
 
 @stop

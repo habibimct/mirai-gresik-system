@@ -6,8 +6,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 
 
-Route::middleware(['auth',
-    'role:Super Admin|Admin|Staff Administrasi',])
+Route::middleware([
+    'auth',
+    'role:Super Admin|Admin|Staff Administrasi',
+])
 
     ->prefix('settings')
     ->name('settings.')
@@ -19,6 +21,9 @@ Route::middleware(['auth',
         | USER
         |--------------------------------------------------------------------------
         */
+
+        Route::post('/users/{user}/generate-password', [UserController::class, 'generatePassword'])
+            ->name('users.generate-password');
 
         Route::resource(
             'users',
@@ -48,6 +53,4 @@ Route::middleware(['auth',
             'permissions',
             PermissionController::class
         );
-
     });
-    

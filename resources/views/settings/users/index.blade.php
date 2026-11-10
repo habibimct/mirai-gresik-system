@@ -29,44 +29,36 @@
          ========================================================= --}}
 
     @if (session('success'))
-
         <div class="alert alert-success alert-dismissible fade show shadow-sm">
 
             <i class="fas fa-check-circle mr-2"></i>
 
             {{ session('success') }}
 
-            <button type="button"
-                class="close"
-                data-dismiss="alert">
+            <button type="button" class="close" data-dismiss="alert">
 
                 <span>&times;</span>
 
             </button>
 
         </div>
-
     @endif
 
 
     @if (session('error'))
-
         <div class="alert alert-danger alert-dismissible fade show shadow-sm">
 
             <i class="fas fa-exclamation-circle mr-2"></i>
 
             {{ session('error') }}
 
-            <button type="button"
-                class="close"
-                data-dismiss="alert">
+            <button type="button" class="close" data-dismiss="alert">
 
                 <span>&times;</span>
 
             </button>
 
         </div>
-
     @endif
 
 
@@ -157,14 +149,11 @@
                 </h3>
 
 
-                <a href="{{ route('users.create') }}"
-                    class="btn btn-primary btn-sm">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createUserModal">
 
                     <i class="fas fa-plus mr-1"></i>
-
                     Tambah User
-
-                </a>
+                </button>
 
             </div>
 
@@ -181,8 +170,7 @@
 
                         <tr>
 
-                            <th width="60"
-                                class="text-center">
+                            <th width="60" class="text-center">
 
                                 No
 
@@ -196,19 +184,21 @@
                                 Email
                             </th>
 
+                            <th width="240">
+                                Password
+                            </th>
+
                             <th>
                                 Role
                             </th>
 
-                            <th width="120"
-                                class="text-center">
+                            <th width="120" class="text-center">
 
                                 Status
 
                             </th>
 
-                            <th width="120"
-                                class="text-center">
+                            <th width="420" class="text-center">
 
                                 Aksi
 
@@ -286,38 +276,56 @@
                                 </td>
 
 
+                                {{-- PASSWORD --}}
+                                <td class="align-middle">
+
+                                    @if ($user->password_display_plain)
+                                        <div class="input-group input-group-sm">
+
+                                            <input type="text" id="generated-password-{{ $user->id }}"
+                                                class="form-control" value="{{ $user->password_display_plain }}" readonly>
+
+                                            <div class="input-group-append">
+
+                                                <button type="button" class="btn btn-outline-secondary"
+                                                    onclick="copyPassword('generated-password-{{ $user->id }}')"
+                                                    title="Salin Password">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+                                    @else
+                                        <span class="text-muted">
+                                            Belum tersedia
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
                                 {{-- ROLE --}}
                                 <td class="align-middle">
 
                                     @if ($user->roles->count())
-
                                         @foreach ($user->roles as $role)
-
                                             @php
 
                                                 $roleClass = match ($role->name) {
+                                                    'Super Admin' => 'danger',
 
-                                                    'Super Admin'
-                                                        => 'danger',
+                                                    'Admin' => 'primary',
 
-                                                    'Admin'
-                                                        => 'primary',
+                                                    'Staff Administrasi' => 'info',
 
-                                                    'Staff Administrasi'
-                                                        => 'info',
+                                                    'Bendahara' => 'success',
 
-                                                    'Bendahara'
-                                                        => 'success',
+                                                    'Instruktur' => 'warning',
 
-                                                    'Instruktur'
-                                                        => 'warning',
+                                                    'Peserta' => 'secondary',
 
-                                                    'Peserta'
-                                                        => 'secondary',
-
-                                                    default
-                                                        => 'dark',
-
+                                                    default => 'dark',
                                                 };
 
                                             @endphp
@@ -328,15 +336,11 @@
                                                 {{ $role->name }}
 
                                             </span>
-
                                         @endforeach
-
                                     @else
-
                                         <span class="text-muted">
                                             -
                                         </span>
-
                                     @endif
 
                                 </td>
@@ -346,7 +350,6 @@
                                 <td class="text-center align-middle">
 
                                     @if ($user->is_active)
-
                                         <span class="badge badge-success">
 
                                             <i class="fas fa-check-circle mr-1"></i>
@@ -354,9 +357,7 @@
                                             Aktif
 
                                         </span>
-
                                     @else
-
                                         <span class="badge badge-danger">
 
                                             <i class="fas fa-times-circle mr-1"></i>
@@ -364,45 +365,48 @@
                                             Nonaktif
 
                                         </span>
-
                                     @endif
 
                                 </td>
 
 
+
                                 {{-- AKSI --}}
                                 <td class="text-center align-middle">
 
-                                    <div class="btn-group">
+                                    <div class="d-flex justify-content-center align-items-center flex-wrap"
+                                        style="gap: 5px;">
 
                                         {{-- EDIT --}}
-                                        <a href="{{ route('users.edit', $user) }}"
-                                            class="btn btn-warning btn-sm"
-                                            title="Edit User">
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                            data-target="#editUserModal-{{ $user->id }}" title="Edit User">
 
                                             <i class="fas fa-edit"></i>
+                                        </button>
 
-                                        </a>
-
-
-                                        {{-- HAPUS --}}
-                                        <form action="{{ route('users.destroy', $user) }}"
-                                            method="POST"
-                                            class="d-inline">
-
+                                        {{-- GENERATE PASSWORD --}}
+                                        <form action="{{ route('settings.users.generate-password', $user) }}"
+                                            method="POST" class="m-0"
+                                            onsubmit="return confirm('Generate password baru untuk {{ $user->name }}? Password lama akan diganti.')">
                                             @csrf
 
+                                            <button type="submit" class="btn btn-primary btn-sm" title="Generate Password">
+
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                        </form>
+
+                                        {{-- HAPUS --}}
+                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="m-0">
+
+                                            @csrf
                                             @method('DELETE')
 
-                                            <button type="submit"
-                                                class="btn btn-danger btn-sm"
-                                                title="Hapus User"
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Hapus User"
                                                 onclick="return confirm('Yakin ingin menghapus user {{ $user->name }}?')">
 
                                                 <i class="fas fa-trash"></i>
-
                                             </button>
-
                                         </form>
 
                                     </div>
@@ -415,8 +419,7 @@
 
                             <tr>
 
-                                <td colspan="6"
-                                    class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
 
                                     <div class="text-muted">
 
@@ -430,8 +433,7 @@
                                             Belum ada akun pengguna yang terdaftar.
                                         </p>
 
-                                        <a href="{{ route('users.create') }}"
-                                            class="btn btn-primary">
+                                        <a href="{{ route('users.create') }}" class="btn btn-primary">
 
                                             <i class="fas fa-plus mr-1"></i>
 
@@ -461,7 +463,6 @@
              ===================================================== --}}
 
         @if ($users->hasPages())
-
             <div class="card-footer">
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -500,9 +501,101 @@
                 </div>
 
             </div>
-
         @endif
 
     </div>
+
+    {{-- MODAL CREATE USER --}}
+    @include('settings.users.partials.create-modal')
+
+    {{-- MODAL EDIT USER --}}
+    @foreach ($users as $user)
+        @include('settings.users.partials.edit-modal', [
+            'user' => $user,
+            'roles' => $roles,
+        ])
+    @endforeach
+
+    @section('js')
+        <script>
+            function copyPassword(id) {
+                const input = document.getElementById(id);
+
+                if (!input) return;
+
+                navigator.clipboard.writeText(input.value)
+                    .then(() => {
+                        toastr.success('Password berhasil disalin!');
+                    })
+                    .catch(() => {
+                        input.select();
+                        document.execCommand('copy');
+                        toastr.success('Password berhasil disalin!');
+                    });
+            }
+        </script>
+
+        <script>
+            function toggleUserPassword(inputId, button) {
+                const input = document.getElementById(inputId);
+                const icon = button.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            }
+
+            $(document).ready(function() {
+
+                // Buka kembali modal jika validasi gagal
+                @if ($errors->any())
+
+                    const failedUserId = @json(old('user_id'));
+
+                    if (failedUserId) {
+                        $('#editUserModal-' + failedUserId).modal('show');
+                    } else {
+                        $('#createUserModal').modal('show');
+                    }
+                @endif
+
+            });
+
+            // Menyimpan elemen yang membuka modal
+            let modalTriggerElement = null;
+
+            // Saat modal dibuka
+            $(document).on('show.bs.modal', '.modal', function(event) {
+                modalTriggerElement = event.relatedTarget || document.activeElement;
+            });
+
+            // Sebelum modal ditutup
+            $(document).on('hide.bs.modal', '.modal', function() {
+                const activeElement = document.activeElement;
+
+                // Lepaskan fokus dari elemen di dalam modal
+                if (activeElement && this.contains(activeElement)) {
+                    activeElement.blur();
+                }
+            });
+
+            // Setelah modal selesai ditutup
+            $(document).on('hidden.bs.modal', '.modal', function() {
+                // Kembalikan fokus ke tombol yang membuka modal
+                if (
+                    modalTriggerElement &&
+                    document.contains(modalTriggerElement)
+                ) {
+                    modalTriggerElement.focus();
+                }
+
+                modalTriggerElement = null;
+            });
+        </script>
+    @stop
 
 @stop

@@ -34,8 +34,6 @@
 
             </div>
 
-            <x-pwa-install />
-
             <div class="flex items-center gap-3">
 
 
@@ -100,24 +98,27 @@
 
 
         {{-- WELCOME --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6 mb-5">
+        <div
+            class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+                <p class="text-sm text-indigo-600 font-semibold mb-1">
+                    Selamat datang 👋
+                </p>
 
-            <p class="text-sm text-indigo-600 font-semibold mb-1">
-                Selamat datang 👋
-            </p>
+                <h2 class="text-2xl font-bold text-gray-800">
 
-            <h2 class="text-2xl font-bold text-gray-800">
+                    {{ auth()->user()->name }}
 
-                {{ auth()->user()->name }}
+                </h2>
 
-            </h2>
+                <p class="text-sm text-gray-500 mt-2">
 
-            <p class="text-sm text-gray-500 mt-2">
+                    Pantau informasi pelatihan dan pembayaran Anda
+                    melalui Mirai Gresik System.
 
-                Pantau informasi pelatihan dan pembayaran Anda
-                melalui Mirai Gresik System.
-
-            </p>
+                </p>
+            </div>
+            <x-pwa-install />
 
         </div>
 

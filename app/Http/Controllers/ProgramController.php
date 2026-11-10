@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Program;
-use App\Models\Classroom;
 use Illuminate\Http\Request;
 
 class ProgramController extends Controller
@@ -32,20 +31,19 @@ class ProgramController extends Controller
         return view('programs.create');
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'code' => 'required|max:20|unique:programs,code',
             'name' => 'required|max:100',
             'description' => 'nullable',
             'is_active' => 'required|boolean',
         ]);
 
-        Program::create($request->all());
+        Program::create($validated);
 
         return redirect()
             ->route('programs.index')
@@ -73,14 +71,14 @@ class ProgramController extends Controller
      */
     public function update(Request $request, Program $program)
     {
-        $request->validate([
+        $validated = $request->validate([
             'code' => 'required|max:20|unique:programs,code,' . $program->id,
             'name' => 'required|max:100',
             'description' => 'nullable',
             'is_active' => 'required|boolean',
         ]);
 
-        $program->update($request->all());
+        $program->update($validated);
 
         return redirect()
             ->route('programs.index')
@@ -98,7 +96,6 @@ class ProgramController extends Controller
             ->exists();
 
         if ($sudahAdaKelas) {
-
             return redirect()
                 ->route('programs.index')
                 ->with(
@@ -111,9 +108,6 @@ class ProgramController extends Controller
 
         return redirect()
             ->route('programs.index')
-            ->with(
-                'success',
-                'Program berhasil dihapus.'
-            );
+            ->with('success', 'Program berhasil dihapus.');
     }
 }

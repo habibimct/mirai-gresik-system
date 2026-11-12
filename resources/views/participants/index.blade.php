@@ -16,13 +16,12 @@
             </p>
         </div>
 
-        <a href="{{ route('participants.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParticipantModal">
 
             <i class="fas fa-user-plus mr-1"></i>
-
             Tambah Peserta
 
-        </a>
+        </button>
 
     </div>
 
@@ -463,61 +462,61 @@
                                 </td>
 
 
-                                {{-- Aksi --}}
-
+                                {{-- AKSI --}}
                                 <td class="text-center align-middle">
 
+                                    <div class="btn-group">
 
-                                    <a href="{{ route('participants.show', $participant) }}" class="btn btn-info btn-sm"
-                                        title="Detail">
+                                        {{-- DETAIL --}}
+                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                            data-target="#showParticipantModal-{{ $participant->id }}" title="Detail">
 
-                                        <i class="fas fa-eye"></i>
-
-                                    </a>
-
-
-                                    <a href="{{ route('participants.programs.index', $participant) }}"
-                                        class="btn btn-primary btn-sm" title="Program">
-
-                                        <i class="fas fa-graduation-cap"></i>
-
-                                    </a>
-
-
-                                    <a href="{{ route('participants.edit', $participant) }}"
-                                        class="btn btn-warning btn-sm" title="Edit">
-
-                                        <i class="fas fa-edit"></i>
-
-                                    </a>
-
-
-                                    @if (!$participant->participant_classrooms_exists)
-                                        <form action="{{ route('participants.destroy', $participant) }}" method="POST"
-                                            class="d-inline">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit" class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Yakin ingin menghapus peserta ini?')">
-
-                                                <i class="fas fa-trash"></i>
-                                               
-
-                                            </button>
-
-                                        </form>
-                                    @else
-                                        <button type="button" class="btn btn-secondary btn-sm" disabled
-                                            title="Peserta sudah masuk kelas">
-
-                                            <i class="fas fa-lock"></i>
-                                           
+                                            <i class="fas fa-eye"></i>
 
                                         </button>
-                                    @endif
 
+                                        {{-- PROGRAM --}}
+                                        <a href="{{ route('participants.programs.index', $participant) }}"
+                                            class="btn btn-primary btn-sm" title="Program">
+
+                                            <i class="fas fa-graduation-cap"></i>
+
+                                        </a>
+
+                                        {{-- EDIT --}}
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                            data-target="#editParticipantModal-{{ $participant->id }}" title="Edit">
+
+                                            <i class="fas fa-edit"></i>
+
+                                        </button>
+
+                                        {{-- HAPUS --}}
+                                        @if (!$participant->participant_classrooms_exists)
+                                            <form action="{{ route('participants.destroy', $participant) }}"
+                                                method="POST" class="d-inline">
+
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus"
+                                                    onclick="return confirm('Yakin ingin menghapus peserta ini?')">
+
+                                                    <i class="fas fa-trash"></i>
+
+                                                </button>
+
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled
+                                                title="Peserta sudah masuk kelas">
+
+                                                <i class="fas fa-lock"></i>
+
+                                            </button>
+                                        @endif
+
+                                    </div>
 
                                 </td>
 
@@ -542,13 +541,13 @@
                                             Silakan tambahkan peserta baru.
                                         </p>
 
-                                        <a href="{{ route('participants.create') }}" class="btn btn-primary">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#createParticipantModal">
 
                                             <i class="fas fa-user-plus mr-1"></i>
-
                                             Tambah Peserta
 
-                                        </a>
+                                        </button>
 
                                     </div>
 
@@ -604,10 +603,28 @@
 
             </div>
         @endif
-
-
     </div>
 
+{{-- =========================================================
+     MODAL PESERTA
+========================================================== --}}
+
+{{-- CREATE --}}
+@include('participants.partials.create-modal')
+
+
+{{-- EDIT DAN SHOW --}}
+@foreach ($participants as $participant)
+
+    @include('participants.partials.edit-modal', [
+        'participant' => $participant
+    ])
+
+    @include('participants.partials.show-modal', [
+        'participant' => $participant
+    ])
+
+@endforeach
 
 @stop
 
@@ -670,5 +687,72 @@
 
         }
     </style>
+
+@stop
+
+
+@section('js')
+
+<script>
+    $(document).ready(function () {
+
+        // Buka kembali modal jika validasi gagal
+        @if ($errors->any())
+
+            const formContext = @json(old('form_context'));
+            const participantId = @json(old('participant_id'));
+
+            if (formContext === 'edit' && participantId) {
+
+                $('#editParticipantModal-' + participantId).modal('show');
+
+            } else if (formContext === 'create') {
+
+                $('#createParticipantModal').modal('show');
+
+            }
+
+        @endif
+
+    });
+
+
+    // Simpan tombol yang membuka modal
+    $(document).on('show.bs.modal', '.modal', function (event) {
+
+        $(this).data(
+            'modal-trigger',
+            event.relatedTarget || document.activeElement
+        );
+
+    });
+
+
+    // Lepaskan fokus sebelum modal ditutup
+    $(document).on('hide.bs.modal', '.modal', function () {
+
+        const activeElement = document.activeElement;
+
+        if (activeElement && this.contains(activeElement)) {
+            activeElement.blur();
+        }
+
+    });
+
+
+    // Kembalikan fokus setelah modal ditutup
+    $(document).on('hidden.bs.modal', '.modal', function () {
+
+        const trigger = $(this).data('modal-trigger');
+
+        if (trigger && document.contains(trigger)) {
+            trigger.focus();
+        }
+
+        $(this).removeData('modal-trigger');
+
+    });
+
+</script>
 
 @stop

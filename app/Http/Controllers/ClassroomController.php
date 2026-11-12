@@ -25,9 +25,14 @@ class ClassroomController extends Controller
             ->latest()
             ->paginate(10);
 
+        $wavePrograms = WaveProgram::with([
+            'wave',
+            'program'
+        ])->get();
+
         return view(
             'classrooms.index',
-            compact('classrooms')
+            compact('classrooms', 'wavePrograms')
         );
     }
 
@@ -133,6 +138,19 @@ class ClassroomController extends Controller
             ->where('is_active', true)
             ->orderBy('id')
             ->get();
+            
+        $classrooms = Classroom::with([
+            'waveProgram.wave',
+            'waveProgram.program',
+        ])
+            ->withCount('participantClassrooms')
+            ->latest()
+            ->paginate(10);
+
+        $wavePrograms = WaveProgram::with([
+            'wave',
+            'program'
+        ])->get();
 
         return view(
             'classrooms.show',
@@ -140,7 +158,9 @@ class ClassroomController extends Controller
                 'classroom',
                 'participants',
                 'scoreTypes',
-                'attitudeTypes'
+                'attitudeTypes',
+                'classrooms',
+                'wavePrograms'
             )
         );
     }

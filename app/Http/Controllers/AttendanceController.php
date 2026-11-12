@@ -22,28 +22,26 @@ class AttendanceController extends Controller
 
             $schedule = Schedule::findOrFail($request->schedule_id);
 
-            $session = AttendanceSession::create([
-
+            // Gunakan sesi yang sudah ada jika kombinasi kelas,
+            // jadwal, dan tanggalnya sudah terdaftar.
+            $session = AttendanceSession::firstOrCreate([
                 'classroom_id' => $classroom->id,
-
                 'schedule_id' => $schedule->id,
-
-                // Tanggal absensi mengikuti tanggal jadwal
                 'attendance_date' => $schedule->schedule_date,
-
             ]);
 
+            // Simpan atau perbarui absensi masing-masing peserta.
             foreach ($request->status as $participantClassroomId => $status) {
 
-                Attendance::create([
-
-                    'attendance_session_id' => $session->id,
-
-                    'participant_classroom_id' => $participantClassroomId,
-
-                    'status' => $status,
-
-                ]);
+                Attendance::updateOrCreate(
+                    [
+                        'attendance_session_id' => $session->id,
+                        'participant_classroom_id' => $participantClassroomId,
+                    ],
+                    [
+                        'status' => $status,
+                    ]
+                );
             }
         });
 

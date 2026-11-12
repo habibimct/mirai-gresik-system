@@ -19,12 +19,12 @@
 
         </div>
 
-        <a href="{{ route('participants.programs.create', $participant) }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParticipantProgramModal">
 
             <i class="fas fa-plus mr-1"></i>
             Tambah Program
 
-        </a>
+        </button>
 
     </div>
 
@@ -446,12 +446,13 @@
 
                                 <td class="text-center align-middle">
                                     @if (!$item->is_finalized)
-                                        <a href="{{ route('participants.programs.edit', [$participant, $item]) }}"
-                                            class="btn btn-warning btn-sm" title="Edit Penyesuaian">
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                            data-target="#editParticipantProgramModal-{{ $item->id }}"
+                                            title="Edit Penyesuaian">
 
                                             <i class="fas fa-edit"></i>
 
-                                        </a>
+                                        </button>
                                     @else
                                         <button type="button" class="btn btn-secondary btn-sm" disabled
                                             title="Program sudah difinalkan">
@@ -512,14 +513,13 @@
 
                                             </p>
 
-                                            <a href="{{ route('participants.programs.create', $participant) }}"
-                                                class="btn btn-primary">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#createParticipantProgramModal">
 
                                                 <i class="fas fa-plus mr-1"></i>
-
                                                 Tambah Program
 
-                                            </a>
+                                            </button>
 
                                         </div>
 
@@ -588,6 +588,27 @@
         </div>
 
 
+        {{-- =========================================================
+            MODAL PROGRAM PESERTA
+        ========================================================== --}}
+
+        {{-- CREATE --}}
+        @include('participant-wave-programs.partials.create-modal', [
+            'participant' => $participant,
+            'waves' => $waves,
+        ])
+
+        {{-- EDIT --}}
+        @foreach ($programs as $item)
+            @if (!$item->is_finalized)
+                @include('participant-wave-programs.partials.edit-modal', [
+                    'participant' => $participant,
+                    'item' => $item,
+                ])
+            @endif
+        @endforeach
+
+
     @stop
 
 
@@ -653,6 +674,497 @@
                 }
 
             }
+
+            #program-list {
+                background-color: #fafafa;
+            }
+
+            #program-list table {
+                margin-bottom: 0;
+            }
+
+            #program-list tbody tr:hover {
+                background-color: #f4f6f9;
+            }
+
+            .program-checkbox {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .program-name {
+                font-weight: 600;
+            }
         </style>
 
+    @stop
+
+
+    @section('js')
+        <script>
+            $(document).ready(function() {
+
+                /*
+                |--------------------------------------------------------------------------
+                | CREATE PROGRAM - AJAX
+                |--------------------------------------------------------------------------
+                */
+
+                const waveSelect = $('#wave_id');
+                const programList = $('#program-list');
+                const programCount = $('#program-count');
+                const saveButton = $('#saveButton');
+
+                const oldWaveId = @json(old('form_context') === 'create' ? old('wave_id') : null);
+                const oldSelectedPrograms = @json(old('form_context') === 'create' ? old('wave_programs', []) : []).map(String);
+
+                const participantName = @json($participant->user->name);
+
+                function escapeHtml(value) {
+                    return $('<div>').text(value ?? '').html();
+                }
+
+                function updateSaveButton() {
+
+                    const checked = $('#program-list input[name="wave_programs[]"]:checked').length;
+
+                    saveButton.prop('disabled', checked === 0);
+
+                    if (checked > 0) {
+
+                        programCount
+                            .removeClass('badge-secondary')
+                            .addClass('badge-success')
+                            .text(checked + ' program dipilih');
+
+                    } else {
+
+                        programCount
+                            .removeClass('badge-success')
+                            .addClass('badge-secondary')
+                            .text('Belum dipilih');
+
+                    }
+                }
+
+                function loadPrograms(waveId, waveName) {
+
+                    saveButton.prop('disabled', true);
+
+                    programCount
+                        .removeClass('badge-success')
+                        .addClass('badge-secondary')
+                        .text('Memuat...');
+
+                    if (!waveId) {
+
+                        programList.html(`
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-layer-group fa-2x mb-2"></i>
+                    <div>Pilih gelombang terlebih dahulu.</div>
+                </div>
+            `);
+
+                        programCount.text('Belum dipilih');
+
+                        return;
+                    }
+
+                    programList.html(`
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary mb-2"></div>
+                <div class="text-muted">Memuat program tersedia...</div>
+            </div>
+        `);
+
+                    const url = '/participants/{{ $participant->id }}/waves/' +
+                        encodeURIComponent(waveId) +
+                        '/available-programs';
+
+                    $.get(url, function(data) {
+
+                        if (!Array.isArray(data) || data.length === 0) {
+
+                            programList.html(`
+                    <div class="alert alert-success mb-0">
+
+                        <h5>
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Semua Program Sudah Terdaftar
+                        </h5>
+
+                        <p class="mb-0">
+                            Peserta <strong>${escapeHtml(participantName)}</strong>
+                            sudah terdaftar pada seluruh program yang tersedia
+                            di <strong>${escapeHtml(waveName)}</strong>.
+                        </p>
+
+                    </div>
+                `);
+
+                            programCount
+                                .removeClass('badge-success')
+                                .addClass('badge-secondary')
+                                .text('Tidak ada program');
+
+                            return;
+                        }
+
+                        let html = `
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover mb-0">
+
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="55" class="text-center">Pilih</th>
+                                <th>Program</th>
+                                <th width="140" class="text-right">Biaya</th>
+                                <th width="80" class="text-center">Kuota</th>
+                                <th width="80" class="text-center">Terisi</th>
+                                <th width="80" class="text-center">Sisa</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+            `;
+
+                        const selectedIds = String(waveId) === String(oldWaveId) ?
+                            oldSelectedPrograms :
+                            [];
+
+                        data.forEach(function(item) {
+
+                            const remaining = Number(item.remaining);
+
+                            const checked = selectedIds.includes(String(item.id)) &&
+                                remaining > 0;
+
+                            let quotaBadge = '';
+
+                            if (remaining <= 0) {
+
+                                quotaBadge = `
+                        <span class="badge badge-danger">Penuh</span>
+                    `;
+
+                            } else if (remaining <= 5) {
+
+                                quotaBadge = `
+                        <span class="badge badge-warning">${remaining}</span>
+                    `;
+
+                            } else {
+
+                                quotaBadge = `
+                        <span class="badge badge-success">${remaining}</span>
+                    `;
+
+                            }
+
+                            html += `
+                    <tr>
+
+                        <td class="text-center">
+
+                            <input
+                                type="checkbox"
+                                class="program-checkbox"
+                                name="wave_programs[]"
+                                value="${Number(item.id)}"
+                                ${remaining <= 0 ? 'disabled' : ''}
+                                ${checked ? 'checked' : ''}
+                            >
+
+                        </td>
+
+                        <td>
+                            <span class="program-name">
+                                ${escapeHtml(item.program)}
+                            </span>
+                        </td>
+
+                        <td class="text-right">
+                            Rp ${Number(item.fee).toLocaleString('id-ID')}
+                        </td>
+
+                        <td class="text-center">
+                            ${Number(item.quota)}
+                        </td>
+
+                        <td class="text-center">
+                            ${Number(item.filled)}
+                        </td>
+
+                        <td class="text-center">
+                            ${quotaBadge}
+                        </td>
+
+                    </tr>
+                `;
+
+                        });
+
+                        html += `
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="mt-3 text-muted small">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Pilih satu atau beberapa program yang ingin didaftarkan.
+                </div>
+            `;
+
+                        programList.html(html);
+
+                        updateSaveButton();
+
+                    }).fail(function() {
+
+                        programList.html(`
+                <div class="alert alert-danger mb-0">
+
+                    <h5>
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        Gagal Memuat Data
+                    </h5>
+
+                    <p class="mb-0">
+                        Program tidak dapat dimuat. Silakan coba kembali.
+                    </p>
+
+                </div>
+            `);
+
+                        programCount.text('Gagal memuat');
+                    });
+                }
+
+
+                // Perubahan gelombang
+                waveSelect.on('change', function() {
+
+                    const waveId = $(this).val();
+
+                    const waveName = $(this)
+                        .find(':selected')
+                        .data('name') || '';
+
+                    loadPrograms(waveId, waveName);
+
+                });
+
+
+                // Saat modal dibuka kembali
+                $('#createParticipantProgramModal').on('shown.bs.modal', function() {
+
+                    const waveId = waveSelect.val();
+
+                    if (waveId) {
+
+                        const waveName = waveSelect
+                            .find(':selected')
+                            .data('name') || '';
+
+                        // Muat daftar program hanya jika belum dimuat
+                        if (programList.find('input[name="wave_programs[]"]').length === 0) {
+                            loadPrograms(waveId, waveName);
+                        }
+
+                    }
+
+                });
+
+
+                // Validasi submit Create
+                $('#programForm').on('submit', function(e) {
+
+                    const checked = $('#program-list input[name="wave_programs[]"]:checked').length;
+
+                    if (checked === 0) {
+
+                        e.preventDefault();
+
+                        if (window.Swal) {
+
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Program Belum Dipilih',
+                                text: 'Silakan pilih minimal satu program terlebih dahulu.',
+                                confirmButtonText: 'Mengerti'
+                            });
+
+                        } else {
+
+                            alert('Silakan pilih minimal satu program terlebih dahulu.');
+
+                        }
+
+                        return false;
+                    }
+
+                    saveButton.prop('disabled', true);
+
+                    saveButton.html(`
+            <span class="spinner-border spinner-border-sm mr-1"></span>
+            Menyimpan...
+        `);
+
+                });
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | EDIT PROGRAM - KALKULASI BIAYA
+                |--------------------------------------------------------------------------
+                */
+
+                function formatRupiah(number) {
+
+                    return new Intl.NumberFormat('id-ID').format(number);
+
+                }
+
+                function calculateParticipantFee(modal) {
+
+                    const $modal = $(modal);
+
+                    const standardFee = Number(
+                        $modal.find('.modal-body').data('standard-fee')
+                    ) || 0;
+
+                    const agreedInput = $modal.find('[name="agreed_fee"]').val();
+
+                    const discount = Number(
+                        $modal.find('[name="discount"]').val()
+                    ) || 0;
+
+                    const agreedFee = agreedInput !== '' ?
+                        Number(agreedInput) || 0 :
+                        null;
+
+                    const baseFee = agreedFee !== null ?
+                        agreedFee :
+                        standardFee;
+
+                    const finalFee = Math.max(0, baseFee - discount);
+
+                    if (agreedFee === null) {
+
+                        $modal.find('.js-agreed-fee-preview').html(`
+                <span class="text-muted">
+                    Menggunakan standar
+                </span>
+            `);
+
+                    } else {
+
+                        $modal.find('.js-agreed-fee-preview').text(
+                            'Rp ' + formatRupiah(agreedFee)
+                        );
+
+                    }
+
+                    $modal.find('.js-discount-preview').text(
+                        'Rp ' + formatRupiah(discount)
+                    );
+
+                    $modal.find('.js-final-fee-preview').text(
+                        'Rp ' + formatRupiah(finalFee)
+                    );
+
+                }
+
+
+                // Hitung ulang ketika biaya disepakati atau diskon berubah
+                $(document).on(
+                    'input',
+                    '.js-agreed-fee, .js-discount',
+                    function() {
+
+                        const modal = $(this).closest('.modal');
+
+                        calculateParticipantFee(modal);
+
+                    }
+                );
+
+
+                // Hitung ulang ketika modal Edit dibuka
+                $('.edit-participant-program-modal').on(
+                    'shown.bs.modal',
+                    function() {
+
+                        calculateParticipantFee(this);
+
+                    }
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | MEMBUKA KEMBALI MODAL SETELAH VALIDASI GAGAL
+                |--------------------------------------------------------------------------
+                */
+
+                @if ($errors->any())
+
+                    const formContext = @json(old('form_context'));
+
+                    const itemId = @json(old('participant_program_id'));
+
+                    if (formContext === 'create') {
+
+                        $('#createParticipantProgramModal').modal('show');
+
+                    } else if (formContext === 'edit' && itemId) {
+
+                        $('#editParticipantProgramModal-' + itemId).modal('show');
+
+                    }
+                @endif
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | PERBAIKAN FOKUS BOOTSTRAP MODAL
+                |--------------------------------------------------------------------------
+                */
+
+                let modalTriggerElement = null;
+
+                $(document).on('show.bs.modal', '.modal', function(event) {
+
+                    modalTriggerElement = event.relatedTarget || document.activeElement;
+
+                });
+
+                $(document).on('hide.bs.modal', '.modal', function() {
+
+                    const activeElement = document.activeElement;
+
+                    if (activeElement && this.contains(activeElement)) {
+                        activeElement.blur();
+                    }
+
+                });
+
+                $(document).on('hidden.bs.modal', '.modal', function() {
+
+                    if (
+                        modalTriggerElement &&
+                        document.contains(modalTriggerElement)
+                    ) {
+                        modalTriggerElement.focus();
+                    }
+
+                    modalTriggerElement = null;
+
+                });
+
+            });
+        </script>
     @stop

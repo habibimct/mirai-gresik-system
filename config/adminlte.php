@@ -333,6 +333,7 @@ return [
                     'text' => 'Program',
                     'route' => 'programs.index',
                     'icon' => 'fas fa-book',
+                    'active' => ['programs*'],
                     'role' => [
                         'Super Admin',
                         'Admin',
@@ -345,6 +346,7 @@ return [
                     'text' => 'Gelombang',
                     'route' => 'waves.index',
                     'icon' => 'fas fa-layer-group',
+                    'active' => ['waves*'],
                     'role' => [
                         'Super Admin',
                         'Admin',
@@ -356,6 +358,7 @@ return [
                     'text' => 'Peserta',
                     'route' => 'participants.index',
                     'icon' => 'fas fa-users',
+                    'active' => ['participants*'],
                     'role' => [
                         'Super Admin',
                         'Admin',
@@ -368,6 +371,7 @@ return [
                     'text' => 'Kelas',
                     'route' => 'classrooms.index',
                     'icon' => 'fas fa-school',
+                    'active' => ['classrooms*'],
                     'role' => [
                         'Super Admin',
                         'Admin',
@@ -380,6 +384,7 @@ return [
                     'text' => 'Rekap Nilai',
                     'route' => 'score-recaps.index',
                     'icon' => 'fas fa-chart-line',
+                    'active' => ['score-recaps*'],
                     'role' => [
                         'Super Admin',
                         'Admin',

@@ -24,12 +24,12 @@
 
         <div>
 
-            <a href="{{ route('classrooms.edit', $classroom) }}" class="btn btn-warning">
+            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                data-target="#editClassroomModal-{{ $classroom->id }}" title="Edit">
 
-                <i class="fas fa-edit mr-1"></i>
+                <i class="fas fa-edit"></i>
                 Edit
-
-            </a>
+            </button>
 
             <a href="{{ route('classrooms.index') }}" class="btn btn-secondary">
 
@@ -381,12 +381,27 @@
                     @include('classrooms.tabs.attitudes')
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
+
+    {{-- =========================================================
+        MODAL KELAS
+    ========================================================== --}}
+
+    {{-- CREATE --}}
+    @include('classrooms.partials.create-modal', [
+        'wavePrograms' => $wavePrograms,
+    ])
+
+    {{-- EDIT --}}
+    @foreach ($classrooms as $classroom)
+        @include('classrooms.partials.edit-modal', [
+            'classroom' => $classroom,
+            'wavePrograms' => $wavePrograms,
+        ])
+    @endforeach
+
 
 @stop
 
@@ -478,6 +493,70 @@
 
         });
     </script>
+
+    <script>
+        $(document).ready(function() {
+
+            // Membuka kembali modal jika validasi gagal
+            @if ($errors->any())
+
+                const formContext = @json(old('form_context'));
+                const classroomId = @json(old('classroom_id'));
+
+                if (formContext === 'create') {
+
+                    $('#createClassroomModal').modal('show');
+
+                } else if (formContext === 'edit' && classroomId) {
+
+                    $('#editClassroomModal-' + classroomId).modal('show');
+
+                }
+            @endif
+
+        });
+
+
+        // Menyimpan tombol pemicu modal
+        $(document).on('show.bs.modal', '.modal', function(event) {
+
+            $(this).data(
+                'modal-trigger',
+                event.relatedTarget || document.activeElement
+            );
+
+        });
+
+
+        // Melepaskan fokus sebelum modal ditutup
+        $(document).on('hide.bs.modal', '.modal', function() {
+
+            const activeElement = document.activeElement;
+
+            if (activeElement && this.contains(activeElement)) {
+                activeElement.blur();
+            }
+
+        });
+
+
+        // Mengembalikan fokus setelah modal ditutup
+        $(document).on('hidden.bs.modal', '.modal', function() {
+
+            const trigger = $(this).data('modal-trigger');
+
+            if (trigger && document.contains(trigger)) {
+                trigger.focus();
+            }
+
+            $(this).removeData('modal-trigger');
+
+        });
+    </script>
+
+@stop
+
+@section('js')
 
 @stop
 

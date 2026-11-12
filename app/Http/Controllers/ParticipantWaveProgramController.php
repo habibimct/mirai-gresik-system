@@ -20,6 +20,7 @@ class ParticipantWaveProgramController extends Controller
     {
         $participant->load('user');
 
+        // Data program peserta
         $programs = ParticipantWaveProgram::with([
             'waveProgram.wave',
             'waveProgram.program',
@@ -30,22 +31,11 @@ class ParticipantWaveProgramController extends Controller
 
         $programs->getCollection()->transform(function ($program) {
 
-            /*
-        |--------------------------------------------------------------------------
-        | STATUS FINAL
-        |--------------------------------------------------------------------------
-        */
-
+            // STATUS FINAL
             $program->is_finalized =
                 $program->participantClassroom?->invoice?->is_final ?? false;
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | BIAYA STANDAR
-        |--------------------------------------------------------------------------
-        */
-
+            // BIAYA STANDAR
             $waveProgram = $program->waveProgram;
 
             if ($waveProgram) {
@@ -55,35 +45,31 @@ class ParticipantWaveProgramController extends Controller
                     $waveProgram->wave_id
                 )->sum('amount');
 
-
-                $programFees = FeeSetting::where(
-                    'program_id',
-                    $waveProgram->program_id
-                )
-                    ->where(
-                        'wave_id',
-                        $waveProgram->wave_id
-                    )
+                $programFees = FeeSetting::where('program_id', $waveProgram->program_id)
+                    ->where('wave_id', $waveProgram->wave_id)
                     ->sum('amount');
 
-
-                $program->standard_fee =
-                    $waveFees + $programFees;
+                $program->standard_fee = $waveFees + $programFees;
             } else {
 
                 $program->standard_fee = 0;
             }
 
-
             return $program;
         });
 
+        // DATA GELOMBANG UNTUK MODAL CREATE
+        // Pertahankan filter yang sebelumnya digunakan pada method create().
+        $waves = Wave::orderByDesc('year')
+            ->orderBy('name')
+            ->get();
 
         return view(
             'participant-wave-programs.index',
             compact(
                 'participant',
-                'programs'
+                'programs',
+                'waves'
             )
         );
     }
